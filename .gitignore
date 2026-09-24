@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+data/
+output/
+*.wav
+*.mp3
+*.mid
+*.sf2
