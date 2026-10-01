@@ -1,11 +1,17 @@
+# Python environments and caches
 venv/
+venv_m2e/
 __pycache__/
-*.pyc
 .ipynb_checkpoints/
 
+# Downloaded data and models (records stream on demand or `python -m ecgmusic download` re-fetches them;
+# Essentia models download on first use)
 data/
-output/
+models/
+external/
+
+# Rendered audio is large and can be regenerated from the tracked MIDI files
 *.wav
-*.mp3
-*.mid
-*.sf2
+
+# Analyses of your own ECG files can contain personal health data
+output/analysis/
