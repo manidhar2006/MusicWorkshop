@@ -1,0 +1,167 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\setlist{itemsep=1pt,topsep=3pt,parsep=0pt}
+
+\title{\textbf{Sonifying the Heart: Inner Emotion Detection\\ from ECG through Music}\\[4pt]
+  \large Music Workshop Sprint 3}
+\author{%
+  \begin{tabular}{c@{\hspace{1.5cm}}c@{\hspace{1.5cm}}c}
+    Chervith Reddy & Manidhar Sukasi & Sathwik Reddy\\
+    \texttt{2024101076} & \texttt{2023101067} & \texttt{2024121002}
+  \end{tabular}}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-1.5em}
+
+\section{The Project}
+In Sprint~1 we proposed turning ECG recordings into music, so that a healthy and an irregular
+heart rhythm sound different. In Sprint~2 we planned the pipeline.
+
+In Sprint~3 we built it, and added a fourth stage. That stage reads the emotion of the generated
+music, as a window into the person's inner state:
+\begin{center}
+  \textbf{ECG data} $\;\rightarrow\;$ \textbf{Heartbeats} $\;\rightarrow\;$ \textbf{Music}
+  $\;\rightarrow\;$ \textbf{Emotion}
+\end{center}
+The code is a Python package, \texttt{ecgmusic}, with a step-by-step notebook,
+\texttt{main.ipynb}. One command turns a PhysioNet record, or any ECG file, into MIDI, audio, a
+score plot and an emotion estimate.
+
+\section{What We Built}
+\begin{itemize}
+  \item \textbf{ECG data.}
+    \begin{itemize}
+      \item The main source is the MIT-BIH Atrial Fibrillation Database (\texttt{afdb}). Most of
+        its recordings contain both normal rhythm and AFib, so the same person is heard in both
+        states.
+      \item \texttt{mitdb} adds records 201 and 202, which come from one patient.
+      \item Records are streamed from PhysioNet. Any WFDB or CSV file also works.
+    \end{itemize}
+  \item \textbf{Heartbeats.}
+    \begin{itemize}
+      \item R-peaks come from the annotations, or from the XQRS detector for other files. From
+        them we compute the R--R intervals and RMSSD.
+      \item Each recording gives a 30\,s normal clip (the steadiest window) and a 30\,s AFib clip
+        (the best-detected window). We choose windows this way because \texttt{afdb}'s automatic
+        beat marks jitter in places.
+    \end{itemize}
+  \item \textbf{Music.}
+    \begin{itemize}
+      \item \emph{Notes:} one per heartbeat. Each starts at the R-peak, lasts 85\% of the R--R
+        interval, and is as loud as the ECG amplitude at that beat.
+      \item \emph{Pitch:} follows the deviation $d_i$ of the interval from the mean of the last
+        five intervals. It is C4 when the beat is on time, higher for a faster beat and lower
+        for a slower one.
+      \item \emph{Scale:} C-major pentatonic while $|d_i|<12\%$, chromatic beyond that.
+      \item \emph{Harmony:} strings play C--Am--F--G. Each chord becomes diminished
+        ($\geq 12\%$) or a cluster ($\geq 25\%$) as the beats get irregular.
+      \item \emph{Pulse:} a soft ``lub-dub'' drum beat follows every heartbeat.
+    \end{itemize}
+  \item \textbf{Emotion.}
+    \begin{itemize}
+      \item Our model places the melody on Russell's valence--arousal plane, using three cues:
+        rhythmic irregularity, pitch spread and consonance.
+      \item The emotion picks the melody instrument: nylon guitar for calm, distortion guitar for
+        tense, marimba for happy and cello for sad.
+      \item Two pretrained models, Essentia and music2emo, give independent opinions.
+    \end{itemize}
+\end{itemize}
+
+\section{Results}
+We made 14 pieces: a normal and an AFib clip from each of 7 recordings of 6 people
+(Table~\ref{tab:results}).\footnote{These numbers come from our first implementation. The
+\texttt{ecgmusic} package uses the same rules and parameters, and will regenerate them.}
+
+\begin{table}[h]
+\centering
+\small
+\setlength{\tabcolsep}{4pt}
+\caption{Every clip. Chords: consonant / tense / chaotic. Emotion from our model.}
+\label{tab:results}
+\begin{tabular}{llrrcl}
+\toprule
+Recording & Rhythm & RMSSD (ms) & Off-scale notes & Chords & Emotion (valence, arousal)\\
+\midrule
+afdb 04015 & normal &   7.6 &  0\% & 10 / 0 / 0 & calm ($+1.00$, $-0.97$)\\
+           & AFib   & 126.1 & 57\% &  5 / 9 / 3 & tense ($-0.67$, $+0.76$)\\
+afdb 04043 & normal &   8.5 &  0\% & 14 / 0 / 0 & calm ($+1.00$, $-0.96$)\\
+           & AFib   & 134.9 & 52\% & 6 / 10 / 0 & tense ($-0.51$, $+0.45$)\\
+afdb 04126 & normal &  18.6 &  0\% & 10 / 0 / 0 & calm ($+0.93$, $-0.79$)\\
+           & AFib   & 141.9 & 66\% & 3 / 12 / 5 & tense ($-0.89$, $+0.85$)\\
+afdb 06995 & normal &  17.8 &  0\% & 10 / 0 / 0 & calm ($+0.93$, $-0.81$)\\
+           & AFib   & 122.8 & 51\% &  6 / 7 / 1 & tense ($-0.45$, $+0.31$)\\
+afdb 08455 & normal &   8.3 &  0\% & 10 / 0 / 0 & calm ($+1.00$, $-0.96$)\\
+           & AFib   &  99.9 & 31\% & 11 / 4 / 0 & happy, borderline ($+0.07$, $+0.02$)\\
+mitdb 201  & normal &  64.1 &  0\% &  6 / 0 / 0 & calm ($+0.89$, $-0.69$)\\
+           & AFib   & 194.3 & 52\% &  3 / 9 / 1 & tense ($-0.58$, $+0.76$)\\
+mitdb 202  & normal &  37.4 &  0\% &  7 / 0 / 0 & calm ($+0.89$, $-0.65$)\\
+           & AFib   & 146.9 & 33\% &  9 / 5 / 2 & tense ($-0.07$, $+0.44$)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{Heartbeats.} In every recording, the AFib clip is 3--17 times as variable as the
+    normal clip.
+  \item \textbf{Music.}
+    \begin{itemize}
+      \item Normal pieces stay on the scale, and all 67 of their chords are consonant.
+      \item AFib pieces leave the scale for 31--66\% of their notes, and 68 of their 111 chords
+        turn tense or chaotic.
+    \end{itemize}
+  \item \textbf{Emotion.} Our model reads all 7 normal pieces as calm, and 6 of the 7 AFib pieces
+    as tense. The seventh, 08455, is a mild AFib stretch and lands at the centre of the plane.
+  \item \textbf{Pretrained models.} Both hear a difference in every recording, but describe it
+    differently:
+    \begin{itemize}
+      \item Essentia hears the AFib pieces as more energetic and more pleasant (7 of 7).
+      \item music2emo hears them as less pleasant and less energetic (6 of 7).
+    \end{itemize}
+    Tempo probably explains part of this. Every AFib clip is also the faster heart (101--160
+    against 50--108\,bpm), and our model ignores tempo on purpose.
+\end{itemize}
+
+\section{Changes from the Sprint 2 Plan}
+\begin{itemize}
+  \item \textbf{Data source.} \texttt{afdb} is the main source, instead of \texttt{mitdb} with
+    \texttt{nsrdb} as the reference. This lets us hear the same person in both rhythms.
+  \item \textbf{Clip selection.} Choosing the steadiest window replaced the 0.3--2.0\,s
+    plausibility filter. It handles the jittery beat marks we found.
+  \item \textbf{Scale and loudness.}
+    \begin{itemize}
+      \item The scale is C-major pentatonic, which has the same notes as A minor pentatonic, to
+        fit the C--Am--F--G harmony.
+      \item The ECG amplitude sets the loudness. $|d_i|$ drives the harmony instead.
+    \end{itemize}
+  \item \textbf{Added:} the three-part arrangement, the emotion stage, and support for any ECG
+    file.
+  \item \textbf{Not done yet:} SDNN, pNN50, Poincar\'e plots and rate-matched clips.
+\end{itemize}
+
+\section{Next Steps}
+\begin{itemize}
+  \item Regenerate the results with the \texttt{ecgmusic} package.
+  \item Test whether the emotion matches what people actually feel. We plan to use ECG datasets
+    with self-reported emotion (WESAD, DREAMER, AMIGOS) and a listening study.
+  \item Adapt the mapping for healthy hearts. There, calm breathing \emph{raises} beat-to-beat
+    variability, which our current mapping would read as tension.
+\end{itemize}
+
+\section{Contributions}
+\begin{tabular}{@{}lll@{}}
+Chervith Reddy  & \texttt{2024101076} & Stages 1--2: ECG data and heartbeats\\
+Manidhar Sukasi & \texttt{2023101067} & Stage 3: music, and integration (package, notebook)\\
+Sathwik Reddy   & \texttt{2024121002} & Stage 4: emotion and evaluation\\
+\end{tabular}
+
+\end{document}

@@ -1,0 +1,68 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\setlist{itemsep=1pt,topsep=3pt,parsep=0pt}
+
+\begin{document}
+\begin{center}
+  {\Large\bfseries Sonifying the Heart: Inner Emotion Detection from ECG through Music}\\[6pt]
+  Music Workshop Sprint 3: Individual Contribution\\[8pt]
+  {\large Sathwik Reddy} \quad \texttt{2024121002}
+\end{center}
+\noindent\rule{\textwidth}{0.4pt}
+
+\section{My Role}
+I built the fourth stage of our pipeline, \textbf{Emotion}, which reads the emotion of the
+generated music. I also evaluated it.
+
+\section{What I Did}
+\begin{itemize}
+  \item \textbf{Our emotion model.}
+    \begin{itemize}
+      \item It places each melody on Russell's valence--arousal plane, using three musical cues:
+        rhythmic irregularity, pitch spread and consonance.
+      \item Tempo and loudness are left out on purpose. Tempo differs more between people than
+        between rhythms, and loudness is re-scaled within each clip.
+    \end{itemize}
+  \item \textbf{Essentia.}
+    \begin{itemize}
+      \item Four pretrained mood classifiers and a valence/arousal model trained on DEAM, run on
+        both the melody and the full arrangement.
+      \item Found and fixed a bug: the classifiers list their classes in different orders
+        (\texttt{happy, non\_happy} but \texttt{non\_sad, sad}).
+    \end{itemize}
+  \item \textbf{music2emo.} Set up its separate environment and ran it on all 14 melodies.
+  \item \textbf{Comparison.} For every recording, checked whether each method scores the AFib
+    piece higher or lower than the normal one.
+  \item \textbf{Validation plan.}
+    \begin{itemize}
+      \item ECG datasets with self-reported emotion (WESAD, DREAMER, AMIGOS), compared against
+        plain heart-rate variability.
+      \item The ethics of using this with specific groups, such as autistic people.
+    \end{itemize}
+\end{itemize}
+
+\section{Key Result}
+Our model reads all 7 normal pieces as calm, and 6 of the 7 AFib pieces as tense.
+
+All three methods hear a difference in every recording, but no two agree on both valence and
+arousal:
+\begin{itemize}
+  \item Essentia hears AFib as more pleasant and more energetic.
+  \item music2emo hears it as less of both.
+\end{itemize}
+Tempo probably explains part of this, since every AFib clip is also the faster heart.
+
+\section{Next Steps}
+\begin{itemize}
+  \item Run the validation on WESAD first.
+  \item Design the listening study.
+\end{itemize}
+
+\end{document}
