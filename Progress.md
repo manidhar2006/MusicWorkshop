@@ -18,10 +18,10 @@ why, and what is next.
 | Stage 2: Heartbeats | ✅ Done | Database annotations or XQRS detection; R-R intervals and RMSSD; clip selection that survives `afdb`'s jittery beat marks. |
 | Stage 3: Music | ✅ Done | Melody (one note per heartbeat), strings with tension tiers, lub-dub pulse; MIDI, audio and a score plot. |
 | Stage 4: Emotion | ✅ Built · 🟨 not validated | Our model, Essentia and music2emo. Essentia's mood columns were fixed today. Not yet compared with people's own emotion reports. |
-| Code: `ecgmusic/` and `main.ipynb` | ✅ Run and verified | Ran end to end on 2026-10-08 in a new venv. All 14 examples reproduce [§11.1](project_description.md#111-heartbeats-music-and-our-model) exactly. |
+| Code | ✅ Run and verified | Ran end to end on 2026-10-08. All 14 examples reproduce [§11.1](project_description.md#111-heartbeats-music-and-our-model) exactly. Now a single notebook. |
 | Results | ✅ Reproduced | 14 clips from 7 recordings of 6 people, in [project_description.md §11](project_description.md#11-results). Regenerated 2026-10-08; every figure matches. |
 | Documentation | ✅ Done | [Plan.md](Plan.md) (start here), [README.md](README.md), [project_description.md](project_description.md), this file. |
-| `sonifying_the_heart.ipynb` | ✅ Written and run | The whole project in one self-contained notebook, 57 cells. Runs top to bottom; no imports from `ecgmusic/`. |
+| [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) | ✅ The project | Every stage in one self-contained notebook, 59 cells. Runs top to bottom. Replaced the `ecgmusic/` package and `main.ipynb`. |
 | Listening study | ✅ Ready to circulate | 16 blinded clips in `output/listening_study/`, the Google Form spec in [listening_study_questions.md](listening_study_questions.md), and `ecgmusic/listening_study.py` for the analysis. No listeners yet. |
 | Sprint 3 submission | ✅ Written | `sprint3/`: team report `Sprint3.pdf` (3 pages) and one 1-page individual report per member (`<roll number>_Sprint3.pdf`), with their LaTeX sources. Not committed. |
 | Git | ✅ Committed, not pushed | All work was committed on 2026-10-01 at the user's request, on the branch `claude/inner-emotion-rewrite`. Nothing has been pushed to GitHub yet. |
@@ -58,6 +58,30 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
 ---
 
 ## Log
+
+### 2026-10-09 · The notebook replaces the package
+
+- **The user's instruction:** keep one notebook with the whole workflow and its supporting files,
+  and remove what is no longer needed.
+- **Deleted** the `ecgmusic/` package (11 modules) and `main.ipynb`. Both are in git history at
+  `aff587b` if they are ever wanted back.
+- **The notebook now owns the workflow.** It writes to `output/` rather than a separate folder,
+  and gained the last missing piece: `load_forms_csv` and `load_study_key`, so a Google Forms
+  export can be dropped in as `responses.csv` and analysed without leaving the notebook. 59 cells.
+- **Updated every reference** in [README.md](README.md), [Plan.md](Plan.md),
+  [project_description.md](project_description.md) and
+  [listening_study_questions.md](listening_study_questions.md): module paths became notebook
+  sections, the command-line sections became notebook usage, and the project-structure trees were
+  rewritten. All relative links were re-checked and resolve.
+  - `sprint3/` was deliberately **not** touched: those reports were submitted and describe the
+    project as it stood then.
+  - Older entries in this log still name `ecgmusic` and `main.ipynb`, which is correct history;
+    only the dead links were turned into plain text.
+- **Verified by running it**, not by assuming: all 59 cells compile, the notebook was extracted
+  and executed top to bottom against `output/`, and it reproduces 04043, the 7-of-7 valence and
+  arousal result and record 219's inversion. The Forms path was exercised on a simulated export
+  from 12 synthetic listeners; that file was deleted.
+- **`responses.csv` is gitignored** — real responses could identify classmates.
 
 ### 2026-10-09 · One self-contained notebook; WAVs removed
 
@@ -223,7 +247,7 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
 - **Updated the other files to match.**
   - [README.md](README.md): links to the new documents; corrected Essentia findings and people
     count; a note on where the numbers come from.
-  - [main.ipynb](main.ipynb): new links. It now builds the examples itself when `output/` is
+  - `main.ipynb`: new links. It now builds the examples itself when `output/` is
     missing, and the pretrained-model sections explain how to create their tables instead of
     failing. Corrected Essentia text and people count.
   - `ecgmusic/__main__.py`: the warning printed after an analysis now points to
@@ -264,7 +288,7 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
   - a clear error when FluidSynth is missing;
   - an `ECGMUSIC_SOUNDFONT` override;
   - a valence–arousal plot of all examples.
-- **[main.ipynb](main.ipynb):** a 40-cell walkthrough with detailed explanations. The expensive
+- **`main.ipynb`:** a 40-cell walkthrough with detailed explanations. The expensive
   steps sit behind four switches that are off by default. It is saved without outputs.
 - **Two earlier claims corrected while writing:**
   - Tempo example: record 201's AFib clip (101 bpm) is slower than 04043's normal clip (108 bpm).

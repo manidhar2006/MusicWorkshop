@@ -14,7 +14,8 @@ models.
 
 - **Team:** Chervith Reddy (2024101076) · Manidhar Sukasi (2023101067) · Sathwik Reddy (2024121002)
 - **Course:** Music Workshop
-- **Start here:** [main.ipynb](main.ipynb) runs the whole pipeline step by step, with explanations.
+- **Start here:** [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) is the whole project in
+  one self-contained notebook — every stage, with explanations, run top to bottom.
 - **In depth:** [project_description.md](project_description.md) is the full description (design,
   results, validation plan, ethics). [Progress.md](Progress.md) is the dated log of the work.
 
@@ -84,15 +85,15 @@ detection has been validated is described honestly in [§8](#8-validation-status
                                        audio.py, plots.py                 essentia_models.py
 ```
 
-| Stage | Input → output | Code |
+| Stage | Input → output | Notebook section |
 |---|---|---|
-| 1. ECG data | A recording: a PhysioNet record, or any WFDB record / CSV file of samples | [`ecgmusic/data.py`](ecgmusic/data.py) |
-| 2. Heartbeats | ECG → heartbeat times (R-peaks), R-R intervals, beat-to-beat variability (RMSSD) | [`ecgmusic/data.py`](ecgmusic/data.py) |
-| 3. Music | Heartbeats → melody, string harmony and drum pulse → MIDI, audio and a score | [`ecgmusic/melody.py`](ecgmusic/melody.py), [`arrangement.py`](ecgmusic/arrangement.py), [`audio.py`](ecgmusic/audio.py), [`plots.py`](ecgmusic/plots.py) |
-| 4. Emotion | Music → valence, arousal and an emotion (calm, tense, happy or sad), plus second and third opinions from pretrained models | [`ecgmusic/emotion.py`](ecgmusic/emotion.py), [`essentia_models.py`](ecgmusic/essentia_models.py), [`music2emo_crosscheck.py`](ecgmusic/music2emo_crosscheck.py) |
+| 1. ECG data | A recording: a PhysioNet record, or any WFDB record / CSV file of samples | §3 |
+| 2. Heartbeats | ECG → heartbeat times (R-peaks), R-R intervals, beat-to-beat variability (RMSSD) | §3 |
+| 3. Music | Heartbeats → melody, string harmony and drum pulse → MIDI, audio and a score | §4, §6, §7 |
+| 4. Emotion | Music → valence, arousal and an emotion (calm, tense, happy or sad) | §5 |
 
-[`ecgmusic/pipeline.py`](ecgmusic/pipeline.py) chains the stages, and every parameter lives in
-[`ecgmusic/config.py`](ecgmusic/config.py).
+All of it lives in [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb). §8 joins the stages
+together, and every parameter sits in one cell in §2.
 
 ---
 
@@ -351,14 +352,14 @@ Disagreement between music-emotion models is a known open problem in the field.
 
 **Where these numbers come from.**
 
-- **First implementation:** they were produced by the project's first implementation. The
-  rewritten `ecgmusic` package uses the same rules and parameters, but has not been run yet.
+- **Reproduced.** They were produced by the project's first implementation, and reproduced
+  exactly on 2026-10-08 by the current code — every valence, arousal and chord count.
 - **Essentia correction:** the "sad" and "relaxed" readings were corrected on 2026-10-01. The first
   version read the wrong output column of those two classifiers; the details are in
   [Progress.md](Progress.md).
 - **More detail:** every per-clip number from all three models is in
   [project_description.md §11](project_description.md#11-results), and
-  [main.ipynb](main.ipynb) recomputes them.
+  [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) recomputes them.
 
 ---
 
@@ -394,8 +395,8 @@ mapping:
 | [DREAMER](https://zenodo.org/records/546113) | 23 | 2-channel ECG, 256 Hz | self-rated valence, arousal, dominance for 18 film clips |
 | [AMIGOS](https://www.eecs.qmul.ac.uk/mmv/datasets/amigos/index.html) | 40 | ECG (+ EEG, GSR) | self-rated valence, arousal, dominance, liking, familiarity |
 
-`python -m ecgmusic analyze` already accepts any ECG file, so this is mostly a matter of running
-it over these datasets and comparing the results.
+The notebook's `clip_from_signal` already accepts any ECG file with no annotations, so this is
+mostly a matter of running it over these datasets and comparing the results.
 
 ---
 
@@ -412,58 +413,42 @@ pip install -r requirements.txt
 ### 9.2 The notebook
 
 ```bash
-jupyter notebook main.ipynb
+jupyter notebook sonifying_the_heart.ipynb
 ```
 
-The notebook runs all four stages with explanations, plots and results. The expensive steps are
+This is the project. It runs all four stages with explanations, plots and results, and imports
+nothing from anywhere else — 59 cells, read or run top to bottom. The expensive steps are
 switches at the top, all off by default:
 
 | Switch | When on |
 |---|---|
-| `DOWNLOAD_DATA` | downloads both databases (~720 MB) |
-| `RENDER_AUDIO` | renders and plays the audio (needs FluidSynth) |
-| `RUN_ESSENTIA` | runs the pretrained Essentia models (needs `RENDER_AUDIO`) |
-| `REBUILD_EXAMPLES` | recomputes all 14 examples even if `output/` already has them |
+| `RENDER_AUDIO` | renders WAV files with FluidSynth |
+| `BUILD_ALL` | composes all 14 example pieces (streams 7 records; a few minutes) |
+| `BUILD_STUDY` | builds the blinded listening-study clip set (needs `ffmpeg`) |
 
-The first run builds the 14 examples into `output/` by itself. With the switches off, that is
-MIDI and score plots only, and takes 1–2 minutes. Later runs reuse them. The Essentia and
-music2emo sections show their results once those tables exist, and say how to make them if not.
+With the switches off it streams one record, composes both its clips, and draws every figure in
+about a minute. Results for all 14 pieces load from `output/examples_summary.csv` if it is there.
 
-### 9.3 Command line
+### 9.3 One record, in four lines
 
-```bash
-python -m ecgmusic analyze path/to/record            # any ECG: WFDB record (no extension) ...
-python -m ecgmusic analyze path/to/ecg.csv --fs 250  # ... or a CSV of samples + sampling rate
-python -m ecgmusic build                             # rebuild the 14 examples and result tables
-python -m ecgmusic download afdb                     # optional: download a full database
-```
-
-| `analyze` option | Meaning |
-|---|---|
-| `--fs 250` | sampling rate in Hz (required for CSV files) |
-| `--channel 1` | which ECG lead to use (default: the first) |
-| `--start 120` | start this many seconds into the recording |
-| `--duration 30` | how many seconds to use (default 60) |
-| `--out folder` | where to write the results |
-| `--no-audio` | MIDI and score only (no FluidSynth needed) |
-| `--essentia` | add a second opinion from Essentia |
-
-### 9.4 Python
+Every function below is defined in the notebook; run its cells first.
 
 ```python
-from ecgmusic.data import record_clips
-from ecgmusic.pipeline import compose, save
-
-clips = record_clips('04043', 'afdb')     # Stages 1-2: streamed if not downloaded
+clips = record_clips('04043', 'afdb')     # Stages 1-2: streamed from PhysioNet
 piece = compose(clips['AFIB'])            # Stages 3-4: melody, emotion, arrangement
 print(piece.emotion.quadrant, piece.emotion.valence, piece.emotion.arousal)
 save(piece, clips['AFIB'], 'my_piece', title='04043 AFib')   # MIDI, WAV, score.png
 ```
 
-### 9.5 Your own ECG file
+### 9.4 Your own ECG file
 
-```bash
-python -m ecgmusic analyze my_ecg.csv --fs 250 --duration 30
+No annotations needed — the XQRS detector finds the beats.
+
+```python
+signal, fs = load_signal('my_ecg.csv', fs=250)
+clip = clip_from_signal(signal, fs, start=0, duration=30)
+piece = compose(clip)
+save(piece, clip, 'my_analysis', title='my ECG')
 ```
 
 Example output (the first 30 seconds of record 04043):
@@ -501,7 +486,7 @@ pip install chordparser==0.4.2 fire==0.7.0 huggingface_hub==0.28.1 hydra-core==1
   pytorch_lightning==2.4.0 PyYAML==6.0.1 Requests==2.32.3 scikit_learn==1.6.1 \
   torch_optimizer==0.3.0 torchmetrics==1.4.1 tqdm==4.66.5 transformers==4.44.0 \
   mir_eval gradio==5.15.0 spotipy==2.24.0 "setuptools<81"
-python -m ecgmusic.music2emo_crosscheck      # after `python -m ecgmusic build`
+# then run music2emo over output/examples/*/melody.wav from that environment
 ```
 </details>
 
@@ -510,21 +495,13 @@ python -m ecgmusic.music2emo_crosscheck      # after `python -m ecgmusic build`
 ## 10. Project structure
 
 ```
-├── main.ipynb                    the whole pipeline, explained step by step
+├── sonifying_the_heart.ipynb     THE PROJECT: every stage, self-contained
 ├── README.md                     this file
+├── Plan.md                       where the project stands and what comes next
 ├── project_description.md        full description: design, results, validation plan, ethics
 ├── Progress.md                   dated log of the work, newest first
+├── listening_study_questions.md  the Google Form for the listening study
 ├── requirements.txt
-├── ecgmusic/
-│   ├── config.py                 every path and parameter
-│   ├── data.py                   Stages 1-2: ECG data, heartbeats, clips
-│   ├── melody.py                 Stage 3: one note per heartbeat
-│   ├── arrangement.py            Stage 3: harmony and pulse
-│   ├── audio.py                  Stage 3: MIDI and audio
-│   ├── plots.py                  score, ECG and emotion-plane plots
-│   ├── emotion.py                Stage 4: emotion read from the music
-│   ├── essentia_models.py        Stage 4: Essentia second opinion
-│   ├── music2emo_crosscheck.py   Stage 4: music2emo third opinion (own environment)
 │   ├── pipeline.py               chains the stages
 │   └── __main__.py               command line
 └── output/                       created by the pipeline (not in the repository yet)
@@ -551,12 +528,13 @@ These are created locally and kept out of git:
 
 | Resource | What it is |
 |---|---|
-| [main.ipynb](main.ipynb) | The pipeline, explained step by step with code, plots and results |
+| [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) | The project: all four stages with code, explanations, plots and results |
+| [Plan.md](Plan.md) | Where the project stands, and what each remaining step would let us conclude |
 | [project_description.md](project_description.md) | The full description: motivation, every stage in detail, all results, validation plan, data provenance and ethics |
 | [Progress.md](Progress.md) | Dated log of the work, including the bugs found and how they were fixed |
-| [`ecgmusic/`](ecgmusic) | The pipeline code, one module per step |
+| [listening_study_questions.md](listening_study_questions.md) | The Google Form for the listening study, ready to build |
 
-Running the pipeline (`python -m ecgmusic build`, or the notebook) writes these to `output/`:
+Running the notebook writes these to `output/`:
 
 | Output | What it is |
 |---|---|
@@ -714,8 +692,8 @@ The full, dated story is in [Progress.md](Progress.md). In short:
    - Added the music-emotion model.
    - Cross-checked it against Essentia and music2emo, and reported their disagreement honestly.
 6. **Any ECG file.** Added XQRS heartbeat detection and checked it against expert annotations.
-7. **Rewrite.** Rewrote everything from scratch as the `ecgmusic` package and
-   [main.ipynb](main.ipynb).
+7. **Rewrite.** Rewrote everything from scratch, and later consolidated it into the single
+   notebook [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb).
 8. **Inner emotion detection.**
    - Reframed the documentation around ECG data → Heartbeats → Music → Emotion, and wrote
      [project_description.md](project_description.md).

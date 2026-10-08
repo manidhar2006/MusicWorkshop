@@ -33,12 +33,12 @@ into music, and then ask what emotion the music carries.
 
 The pipeline has four stages.
 
-| Stage | What happens | Where it lives |
+| Stage | What happens | Notebook section |
 |---|---|---|
-| **1. ECG data** | Real recordings from PhysioNet, streamed on demand. Any WFDB or CSV file also works. | [`data.py`](ecgmusic/data.py) |
-| **2. Heartbeats** | Find the R-peaks, from annotations or the XQRS detector. Compute R–R intervals and RMSSD. Pick a 30-second clip. | [`data.py`](ecgmusic/data.py) |
-| **3. Music** | One note per heartbeat, plus a string harmony and a lub-dub pulse. Render to MIDI, audio and a score. | [`melody.py`](ecgmusic/melody.py), [`arrangement.py`](ecgmusic/arrangement.py), [`audio.py`](ecgmusic/audio.py) |
-| **4. Emotion** | Place the music on Russell's valence–arousal plane, with two pretrained models as independent second opinions. | [`emotion.py`](ecgmusic/emotion.py), [`essentia_models.py`](ecgmusic/essentia_models.py) |
+| **1. ECG data** | Real recordings from PhysioNet, streamed on demand. Any WFDB or CSV file also works. | §3 |
+| **2. Heartbeats** | Find the R-peaks, from annotations or the XQRS detector. Compute R–R intervals and RMSSD. Pick a 30-second clip. | §3 |
+| **3. Music** | One note per heartbeat, plus a string harmony and a lub-dub pulse. Render to MIDI, audio and a score. | §4, §6, §7 |
+| **4. Emotion** | Place the music on Russell's valence–arousal plane, with two pretrained models as independent second opinions. | §5 |
 
 **The sonification rule**, which is the heart of the project:
 
@@ -132,9 +132,9 @@ came from the same analog tape as record 201, so the 7 recordings are from **6 p
 
 ### The rewrite
 
-Rewrote the whole codebase as the `ecgmusic` package with a 40-cell notebook, organised by
-responsibility. Written without executing anything, because the machine was low on compute —
-which left the project with a serious unverified risk for a week.
+Rewrote the whole codebase from scratch, organised by responsibility. Written without executing
+anything, because the machine was low on compute — which left the project with a serious
+unverified risk for a week. It was later consolidated into one self-contained notebook.
 
 ### Sprint 3, and then today
 
@@ -158,7 +158,7 @@ Sprint 3 reports written and compiled. Then, on 8 October:
 | Stage 2: Heartbeats | ✅ Done | Annotations or XQRS; clip selection survives `afdb`'s jittery marks. |
 | Stage 3: Music | ✅ Done | Melody, arrangement, MIDI, audio, score plots. |
 | Stage 4: Emotion | ✅ Built · ⬜ not validated | Three models. Never compared against what anyone actually felt. |
-| Code | ✅ Run and verified | 14/14 examples match §11.1 exactly, 8 October. |
+| Code | ✅ Run and verified | 14/14 examples match §11.1 exactly, 8 October. Now one notebook. |
 | Essentia / music2emo tables | 🟨 Not re-run | §11.2 and §11.3 still rest on the first implementation. |
 | Listening study | ✅ Built, ⬜ no listeners | 16 blinded clips, form questions, analysis script. |
 | Documentation | ✅ Done | README, project_description, Progress, this file. |
@@ -167,12 +167,12 @@ Sprint 3 reports written and compiled. Then, on 8 October:
 ### What exists on disk
 
 ```
-ecgmusic/                       the package — 11 modules
-main.ipynb                      40-cell walkthrough
-output/examples/                14 pieces: MIDI, WAV, score PNG
-output/listening_study/         16 blinded mp3s + KEY.csv
+sonifying_the_heart.ipynb       THE PROJECT — every stage, self-contained, 59 cells
 listening_study_questions.md    the Google Form, ready to build
+output/examples/                16 pieces: MIDI + score PNG
+output/listening_study/         16 blinded mp3s + KEY.csv
 project_description.md          the full description, 18 sections
+README.md                       overview, setup, resources
 ```
 
 ---
@@ -247,7 +247,7 @@ This is the part that matters. Each step is listed with what it costs and, more 
 
 **Do:** circulate the form in
 [listening_study_questions.md](listening_study_questions.md), collect 20–30 responses, run
-`python -m ecgmusic.listening_study responses.csv`.
+the analysis in §11 of the notebook.
 
 **Cost:** one class session. No compute, no dataset access, no approvals.
 
@@ -273,7 +273,8 @@ sentence this project could earn.
 
 ### Step 2 — Re-run Essentia and music2emo · *tidying up*
 
-**Do:** `python -m ecgmusic build` without `--no-essentia`, then the music2emo cross-check.
+**Do:** run the notebook with `RENDER_AUDIO` and `BUILD_ALL` on, then Essentia and the music2emo
+cross-check over `output/examples/*/melody.wav`.
 
 **Cost:** moderate compute. Downloads several TensorFlow models; music2emo needs its own
 environment.

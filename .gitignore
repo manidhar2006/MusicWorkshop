@@ -3,21 +3,21 @@ venv*/
 __pycache__/
 .ipynb_checkpoints/
 
-# Downloaded data and models (records stream on demand or `python -m ecgmusic download` re-fetches them;
-# Essentia models download on first use)
+# Downloaded data and models (records stream from PhysioNet on demand)
 data/
 models/
 external/
 
 # Rendered audio is large and can be regenerated from the tracked MIDI files
+# (re-run sonifying_the_heart.ipynb with RENDER_AUDIO = True)
 *.wav
 
 # Analyses of your own ECG files can contain personal health data
 output/analysis/
 
-# sonifying_the_heart.ipynb writes here, so a notebook run never disturbs output/
-output_nb/
+# Listening-study responses can identify classmates
+responses.csv
 
-# The study's 16 blinded mp3s: regenerate with `python -m ecgmusic.build_study`, which is
-# deterministic. KEY.csv and key.json are tracked, so the mapping survives a fresh clone.
+# The study's 16 blinded mp3s: regenerate from section 11 of sonifying_the_heart.ipynb, which
+# is deterministic. KEY.csv is tracked, so the mapping survives a fresh clone.
 output/listening_study/*.mp3

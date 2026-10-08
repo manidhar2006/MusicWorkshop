@@ -5,7 +5,8 @@ Google Forms.
 
 **Audio:** `output/listening_study/clip_01.mp3` … `clip_16.mp3` (16 files, ~380 KB each).
 **The answer key:** `output/listening_study/KEY.csv`. **Never share it with participants**, and
-don't paste any of it into the form.
+don't paste any of it into the form. Section 11 of the notebook rebuilds both the clips and the
+key if you need them again.
 
 ---
 
@@ -243,12 +244,10 @@ that the form is not confusing, and that it really takes about fifteen minutes.
 
 In the Forms editor open **Responses → ⋮ → Download responses (.csv)**, then:
 
-```bash
-python -m ecgmusic.listening_study ~/Downloads/responses.csv
-```
-
-The script reads Google Forms' own export shape directly — it finds each rating column by the
-`clip_NN` in its header — and reports:
+Save it as `responses.csv` beside the notebook, open
+[sonifying_the_heart.ipynb](sonifying_the_heart.ipynb), and run **section 11**. It reads Google
+Forms' own export shape directly — finding each rating column by the `clip_NN` in its header —
+and reports:
 
 1. **Spearman correlation** between the model's valence and arousal and the listeners' means,
    across all 16 clips. The headline number: does the model predict what people hear?
