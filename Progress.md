@@ -83,6 +83,26 @@ The full reasoning, with what each step would let us conclude, is in [Plan.md §
 
 ## Log
 
+### 2026-10-09 · Clean end-to-end rebuild
+
+- Deleted `output/` entirely and rebuilt it from nothing with every switch on (241 s), so the
+  outputs are produced by the current code rather than accumulated across runs.
+- **Produced:** 32 WAVs, 32 MIDI files, 16 score plots, 16 loudness-matched study mp3s, and both
+  result tables.
+- **Everything reproduces.** All 14 rows match
+  [§11.1](project_description.md#111-heartbeats-music-and-our-model) exactly, and the regenerated
+  tables are byte-identical to the previous build. Every tracked file in `output/` — MIDI, score
+  PNGs and both CSVs — came back unchanged, which is a strong check on determinism: even
+  matplotlib's PNG output matched byte for byte.
+- **The clip numbering is unchanged**, so a form already built from `KEY.csv` stays valid.
+- **Study clips verified after the rebuild:** normal −23.42 LUFS against AFib −23.45, a −0.03 LU
+  difference with 0.10 LU spread; loudest peak −3.7 dBFS, no clipping; 31.7–32.6 s each, 8.6
+  minutes in total; 8 normal, 8 AFib, both record 219 controls present.
+- **Removed `output/listening_study/key.json`.** The deleted package wrote it alongside `KEY.csv`;
+  the notebook writes only the CSV, and nothing reads the JSON.
+- The switches were set back to `False` and the notebook re-executed (34 s) so it opens fast and
+  its saved outputs match the switches shown.
+
 ### 2026-10-09 · Pre-flight check before the survey: a loudness confound, found and fixed
 
 Checked every study clip before circulating anything. Durations (31.7-32.6 s) and levels were
