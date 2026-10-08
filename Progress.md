@@ -17,14 +17,14 @@ why, and what is next.
 | Stage 1: ECG data | ✅ Done | `afdb` and `mitdb` from PhysioNet. Records are streamed by default, and a parallel downloader is optional. Any WFDB or CSV file works. |
 | Stage 2: Heartbeats | ✅ Done | Database annotations or XQRS detection; R-R intervals and RMSSD; clip selection that survives `afdb`'s jittery beat marks. |
 | Stage 3: Music | ✅ Done | Melody (one note per heartbeat), strings with tension tiers, lub-dub pulse; MIDI, audio and a score plot. |
-| Stage 4: Emotion | ✅ Built · 🟨 not validated | Our model, Essentia and music2emo. Essentia's mood columns were fixed today. Not yet compared with people's own emotion reports. |
+| Stage 4: Emotion | ✅ Built · ⬜ not validated | Our model, Essentia and music2emo. Essentia's mood columns were corrected on 2026-10-01. Never compared with what any person actually felt, and never heard by a listener. |
 | Code | ✅ Run and verified | Ran end to end on 2026-10-08. All 14 examples reproduce [§11.1](project_description.md#111-heartbeats-music-and-our-model) exactly. Now a single notebook. |
-| Results | ✅ Reproduced | 14 clips from 7 recordings of 6 people, in [project_description.md §11](project_description.md#11-results). Regenerated 2026-10-08; every figure matches. |
+| Results | ✅ Reproduced · 🟨 partly | 14 clips from 7 recordings of 6 people, in [project_description.md §11](project_description.md#11-results). [§11.1](project_description.md#111-heartbeats-music-and-our-model) regenerated 2026-10-08 and every figure matches. §11.2 and §11.3 (Essentia, music2emo) have **not** been re-run. |
 | Documentation | ✅ Done | [Plan.md](Plan.md) (start here), [README.md](README.md), [project_description.md](project_description.md), this file. |
 | [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) | ✅ The project, executed | Every stage in one self-contained notebook, 60 cells, saved with outputs. Switches off, so it opens fast and re-runs in under a minute. Replaced the `ecgmusic/` package and `main.ipynb`. |
-| Listening study | ✅ Ready to circulate | 16 blinded clips in `output/listening_study/`, the Google Form spec in [listening_study_questions.md](listening_study_questions.md), and `ecgmusic/listening_study.py` for the analysis. No listeners yet. |
-| Sprint 3 submission | ✅ Written | `sprint3/`: team report `Sprint3.pdf` (3 pages) and one 1-page individual report per member (`<roll number>_Sprint3.pdf`), with their LaTeX sources. Not committed. |
-| Git | ✅ Committed, not pushed | All work was committed on 2026-10-01 at the user's request, on the branch `claude/inner-emotion-rewrite`. Nothing has been pushed to GitHub yet. |
+| Listening study | ✅ Ready to circulate · ⬜ **no listeners** | 16 blinded clips in `output/listening_study/`, the Google Form written out in [listening_study_questions.md](listening_study_questions.md), and the analysis in §11 of the notebook. Circulation is all that remains. |
+| Sprint 3 submission | ✅ Written and committed | `sprint3/`: team report `Sprint3.pdf` (3 pages) and one 1-page individual report per member (`<roll number>_Sprint3.pdf`), with their LaTeX sources. Deliberately not edited since: they describe the project as it stood at submission. |
+| Git | ✅ Committed and pushed | Everything is on `main` at [github.com/manidhar2006/MusicWorkshop](https://github.com/manidhar2006/MusicWorkshop), working tree clean. The repository is public, which the user is content with. |
 
 Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
 
@@ -32,28 +32,52 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
 
 ## Next steps
 
-- [x] **Run the rewritten code once** (done 2026-10-08; 14/14 examples match §11.1 exactly).
-- [ ] **Run the Essentia and music2emo stages** on the regenerated audio, to check §11.2 and
-      §11.3 as well. Skipped on 2026-10-08 because they are the heavy steps.
-- [ ] **Collect listeners.** Share the study page, aim for 20-30 classmates, then run
-      `python -m ecgmusic.listening_study <responses>`.
-- [ ] **Validate the emotion stage** against self-reported emotion, starting with WESAD, then
-      DREAMER and AMIGOS. Use plain HRV as the baseline
-      ([§13](project_description.md#13-validation-plan)).
-- [ ] **Listening study — now the main deliverable** (decided 2026-10-08). Classmates hear the
-      pieces blind and rate them. This tests the music → emotion step on its own, needs no compute
-      and no new dataset, and closes the one gap that belongs to the sonification itself: whether a
-      listener can actually hear what the mapping encodes. Design is in the log entry below.
-- [ ] **A mapping for healthy hearts**, so that calm, breathing-locked variability (respiratory
-      sinus arrhythmia) is not read as tension.
+The full reasoning, with what each step would let us conclude, is in [Plan.md §6](Plan.md#6-future-steps-and-what-each-would-let-us-conclude).
+
+**Next, and nothing is blocking it:**
+
+- [ ] **Circulate the listening study and collect 20–30 responses.** Everything else is prepared:
+      the clips are rendered and blinded, the Google Form is written out question by question in
+      [listening_study_questions.md](listening_study_questions.md), and the analysis is written and
+      tested. Upload the mp3s to Drive, build the form, pilot it on two or three people, then
+      share it. Save the export as `responses.csv` beside the notebook and run §11.
+      **This is the only step that puts a human in the loop, and it finishes the sonification.**
+
+**After that, in rough order of value per effort:**
+
+- [ ] **Re-run Essentia and music2emo** on the regenerated audio, so §11.2 and §11.3 are verified
+      the way §11.1 now is. The audio they need is already rendered; this is only the cost of the
+      models themselves.
+- [ ] **Widen the evidence** from 5 `afdb` records to the ~21 that have 30 s of both rhythms. Add
+      them to `EXAMPLE_RECORDS` in §2 of the notebook and re-run. Nearly free, and roughly triples
+      the evidence base.
 - [ ] **Listen critically and tune by ear:** the 12% scale threshold, the 85% note length, the
-      12% and 25% chord thresholds, and the instrument choices.
-- [ ] **Decide the final course deliverable** (report, slides, live demo).
-- [x] **Commit the rewrite and the documents** (done 2026-10-01, on the branch
-      `claude/inner-emotion-rewrite`).
-- [ ] **Merge that branch into `main` and push to GitHub**, when the user wants.
-- [ ] **Each teammate checks their own Sprint 3 report** before it is submitted. The split of
-      the work was proposed at the user's request.
+      12% and 25% chord thresholds, and the instrument choices. Every parameter so far is
+      justified by what it *measures*, not by how it *sounds* — which for a music course is the
+      gap worth closing.
+- [ ] **A mapping for healthy hearts**, so that calm, breathing-locked variability (respiratory
+      sinus arrhythmia) is not read as tension. The handle: RSA oscillates at breathing rate,
+      about 0.15–0.4 Hz, while AFib is irregular at every timescale.
+- [ ] **Validate the emotion stage** against self-reported emotion, with WESAD, DREAMER and
+      AMIGOS, using plain HRV as the baseline
+      ([§13.2](project_description.md#132-against-self-reported-emotion)). The honest step, and
+      probably beyond this course.
+
+**Decisions for the user and the professor:**
+
+- [ ] **Decide the final course deliverable** (report, slides, live demo) — see
+      [Plan.md §8](Plan.md#8-what-the-final-deliverable-could-be).
+- [ ] **Does the music need to be *good*, or only *different*?** We have optimised for measurable
+      separation; a music course may care whether the pieces are worth hearing.
+- [ ] **Each teammate checks their own Sprint 3 report.** The split of the work was proposed at
+      the user's request.
+
+**Done:**
+
+- [x] Run the rewritten code (2026-10-08; 14/14 examples match §11.1 exactly).
+- [x] Consolidate everything into one notebook and remove the package (2026-10-09).
+- [x] Build the listening study: clips, form and analysis (2026-10-08/09).
+- [x] Commit everything and push to `main` (2026-10-08/09).
 
 ---
 
@@ -109,6 +133,23 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
 - The deliverable section drops the dead `analyze_file` reference and names the clearest example
   pair to play.
 - 437 lines.
+
+**This file**, last:
+
+- **Status table:** the git row said "committed, not pushed" on a branch that no longer exists —
+  everything is on `main` and pushed. Sprint 3 is no longer "not committed". The results row now
+  distinguishes §11.1 (reproduced) from §11.2 and §11.3 (not re-run). The listening-study row
+  points at §11 of the notebook instead of the deleted `ecgmusic/listening_study.py`. "Essentia's
+  mood columns were fixed today" had been stale since 1 October.
+- **Next steps** rewritten. They had grown to fourteen items with the listening study listed
+  twice, a dead command, and a merge that had already happened. Now: one unblocked next step,
+  five ranked after it, three decisions for the user and the professor, and a done list.
+- **Known issues** gained four that were real but unlisted — never tested on a listener; Essentia
+  and music2emo not re-run; the emotion model calibrated on the same clips it was tested on; the
+  arrangement results partly circular — and lost "the rewritten code has not reproduced the
+  results yet", which is no longer true.
+- A note was added that entries before 9 October name `ecgmusic/` and `main.ipynb`, which was
+  correct then; they are in git history at `aff587b`.
 
 Cross-file anchors between all five documents were checked; all resolve.
 
@@ -469,7 +510,20 @@ Cross-file anchors between all five documents were checked; all resolve.
   ([project_description.md §12](project_description.md#12-discussion-from-the-musics-emotion-to-inner-emotion)).
 - **The three emotion models disagree** on which emotion separates the rhythms.
 - **`afdb`'s heartbeat marks are unaudited.** Clip selection avoids most glitches, but not all.
-- **The rewritten code has not reproduced the results yet.**
+- **Never tested on a listener.** Every result is a measurement on our own output. This is the
+  gap the listening study closes, and until it is closed, "the music carries the rhythm" is an
+  inference rather than an observation.
+- **Essentia and music2emo have not been re-run** since the rewrite, so §11.2 and §11.3 still
+  rest on the first implementation. §11.1 has been reproduced exactly.
+- **The emotion model is calibrated on the same 14 clips it was tested on.** There is no held-out
+  set, so its ranges and weights are fitted, not validated.
+- **The arrangement results are partly circular**, because the melody instrument is chosen by our
+  own model. The listening study sidesteps this by using the plain piano melody.
 - **Older entries use uncorrected Essentia numbers.** Older entries in this log, and any copies of
   the old documents, describe Essentia's "sad" and "relaxed" before the fix. The corrected values
   are in [project_description.md §11.2](project_description.md#112-essentia).
+- **Older entries name files that no longer exist.** Entries before 2026-10-09 refer to the
+  `ecgmusic/` package and `main.ipynb`, which were correct at the time; both were removed when the
+  project was consolidated into `sonifying_the_heart.ipynb`. They remain in git history at
+  `aff587b`. `sprint3/` was deliberately left untouched for the same reason: those reports describe
+  the project as it stood at submission.
