@@ -21,7 +21,7 @@ why, and what is next.
 | Code | ✅ Run and verified | Ran end to end on 2026-10-08. All 14 examples reproduce [§11.1](project_description.md#111-heartbeats-music-and-our-model) exactly. Now a single notebook. |
 | Results | ✅ Reproduced | 14 clips from 7 recordings of 6 people, in [project_description.md §11](project_description.md#11-results). Regenerated 2026-10-08; every figure matches. |
 | Documentation | ✅ Done | [Plan.md](Plan.md) (start here), [README.md](README.md), [project_description.md](project_description.md), this file. |
-| [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) | ✅ The project | Every stage in one self-contained notebook, 59 cells. Runs top to bottom. Replaced the `ecgmusic/` package and `main.ipynb`. |
+| [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) | ✅ The project, executed | Every stage in one self-contained notebook, 60 cells, saved with its outputs from a full run (audio on, all 14 pieces, study set built). Replaced the `ecgmusic/` package and `main.ipynb`. |
 | Listening study | ✅ Ready to circulate | 16 blinded clips in `output/listening_study/`, the Google Form spec in [listening_study_questions.md](listening_study_questions.md), and `ecgmusic/listening_study.py` for the analysis. No listeners yet. |
 | Sprint 3 submission | ✅ Written | `sprint3/`: team report `Sprint3.pdf` (3 pages) and one 1-page individual report per member (`<roll number>_Sprint3.pdf`), with their LaTeX sources. Not committed. |
 | Git | ✅ Committed, not pushed | All work was committed on 2026-10-01 at the user's request, on the branch `claude/inner-emotion-rewrite`. Nothing has been pushed to GitHub yet. |
@@ -58,6 +58,27 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
 ---
 
 ## Log
+
+### 2026-10-09 · Full run with audio
+
+- Ran the notebook end to end with `RENDER_AUDIO` and `BUILD_ALL` on, via `nbclient`, and saved
+  it **with its outputs** — it now shows a complete run rather than empty cells. 235 s.
+- **Produced:** 32 WAVs, 32 MIDI files, 16 score plots and the 16 study mp3s. All 14 example rows
+  match the published [§11.1](project_description.md#111-heartbeats-music-and-our-model) table
+  exactly, for the third independent time.
+- **Two defects found and fixed while doing it.**
+  - §10 composed record 219 but never saved it, so it had no `melody.wav`. §11 silently built a
+    **14-clip** study set instead of 16, dropping the hidden control — the most interesting part
+    of the study. §10 now saves both 219 pieces and writes `record219_excluded.csv` itself.
+  - Turning the switches on by search-and-replace also flipped the FluidSynth fallback inside
+    `if RENDER_AUDIO and shutil.which(...) is None:` from `False` to `True`, which would have
+    *enabled* audio on a machine without FluidSynth. Caught before the run.
+- **No drift.** `KEY.csv`, `examples_summary.csv` and `record219_excluded.csv` have identical
+  columns and identical values to the committed versions; the clip numbering is unchanged, so the
+  mp3s already prepared are still valid. The only difference is line endings: the old files came
+  from Python's `csv` module (CRLF), the notebook writes via pandas (LF).
+- **The switches are now `True` in the committed notebook**, matching the saved outputs. Set them
+  to `False` for a fast read-only open.
 
 ### 2026-10-09 · The notebook replaces the package
 
