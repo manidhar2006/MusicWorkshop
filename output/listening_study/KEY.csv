@@ -1,0 +1,17 @@
+clip,position,record,label,rhythm,excluded_record,rmssd_ms,pct_chromatic,model_valence,model_arousal,model_quadrant,consonant,tense,chaotic
+clip_01,1,219,N,normal,True,270.6,39.29,-0.34,0.9,tense_anxious,3,2,2
+clip_02,2,202,AFIB,afib,False,146.9,32.79,-0.07,0.44,tense_anxious,9,5,2
+clip_03,3,04015,AFIB,afib,False,126.1,56.72,-0.67,0.76,tense_anxious,5,9,3
+clip_04,4,08455,AFIB,afib,False,99.9,30.51,0.07,0.02,happy_excited,11,4,0
+clip_05,5,04043,N,normal,False,8.5,0.0,1.0,-0.96,calm_relaxed,14,0,0
+clip_06,6,201,N,normal,False,64.1,0.0,0.89,-0.69,calm_relaxed,6,0,0
+clip_07,7,08455,N,normal,False,8.3,0.0,1.0,-0.96,calm_relaxed,10,0,0
+clip_08,8,201,AFIB,afib,False,194.3,52.0,-0.58,0.76,tense_anxious,3,9,1
+clip_09,9,219,AFIB,afib,True,145.9,30.77,0.09,-0.08,calm_relaxed,9,1,0
+clip_10,10,06995,AFIB,afib,False,122.8,50.91,-0.45,0.31,tense_anxious,6,7,1
+clip_11,11,04126,N,normal,False,18.6,0.0,0.93,-0.79,calm_relaxed,10,0,0
+clip_12,12,202,N,normal,False,37.4,0.0,0.89,-0.65,calm_relaxed,7,0,0
+clip_13,13,04043,AFIB,afib,False,134.9,52.38,-0.51,0.45,tense_anxious,6,10,0
+clip_14,14,04126,AFIB,afib,False,141.9,65.82,-0.89,0.85,tense_anxious,3,12,5
+clip_15,15,06995,N,normal,False,17.8,0.0,0.93,-0.81,calm_relaxed,10,0,0
+clip_16,16,04015,N,normal,False,7.6,0.0,1.0,-0.97,calm_relaxed,10,0,0

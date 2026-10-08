@@ -80,7 +80,8 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
     clips is the heart.
   - Converted to mono 96 kbps mp3 (6 MB total) and renamed `clip_01`..`clip_16`, in one fixed
     random order with no two clips from the same record adjacent. `KEY.csv` holds the mapping and
-    must not be shown to participants.
+    must not be shown to participants. It is committed at the user's decision; the mp3s are not,
+    since `ecgmusic/build_study.py` regenerates them deterministically.
   - A rating page was published, collecting responses centrally. Four questions per clip:
     pleasantness and energy (1-9, the DEAP/DREAMER scale), a forced choice between calm/tense/
     happy/sad (our four quadrants), and perceived rhythmic steadiness (1-9). The steadiness

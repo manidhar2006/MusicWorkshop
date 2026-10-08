@@ -2,8 +2,7 @@
 
 Produces `output/listening_study/`: sixteen mp3s named clip_01..clip_16, plus the key that maps
 them back to the recordings. Deterministic - the same SEED always gives the same order - so the
-set and its key can be regenerated instead of committed. That matters because this repository is
-public and the key would unblind the study.
+audio can be regenerated instead of committed, and a rebuild never renumbers the clips.
 
 Two choices here carry the study's validity:
 
@@ -128,7 +127,7 @@ def build(out_dir=STUDY_DIR, seed=SEED):
         writer.writerows(key)
     (out_dir / "key.json").write_text(json.dumps(key, indent=2))
     print(f"\n{len(key)} clips in {out_dir}")
-    print("KEY.csv maps them back - it is gitignored, and participants must never see it.")
+    print("KEY.csv maps them back - participants must never see it.")
     return key
 
 

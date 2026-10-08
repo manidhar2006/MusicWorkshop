@@ -15,8 +15,6 @@ external/
 # Analyses of your own ECG files can contain personal health data
 output/analysis/
 
-# Listening-study material: 16 blinded mp3s and the key that maps them back to the recordings.
-# Regenerate with `python -m ecgmusic.build_study`, which is deterministic. KEY.csv is NOT
-# committed on purpose: this repository is public, so publishing it would let a participant look
-# up which clip is which and the study would no longer be blind.
-output/listening_study/
+# The study's 16 blinded mp3s: regenerate with `python -m ecgmusic.build_study`, which is
+# deterministic. KEY.csv and key.json are tracked, so the mapping survives a fresh clone.
+output/listening_study/*.mp3
