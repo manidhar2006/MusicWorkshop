@@ -1,0 +1,15 @@
+db,record,label,rmssd_ms,mean_rr_ms,n_notes,pitch_min,pitch_max,pitch_std,pct_chromatic,valence,arousal,quadrant,instrument,consonant_chords,tense_chords,chaotic_chords
+afdb,04015,N,7.6,747,40,60,60,0.0,0.0,1.0,-0.97,calm_relaxed,Acoustic Guitar (nylon),10,0,0
+afdb,04015,AFIB,126.1,437,67,36,78,9.75,56.72,-0.67,0.76,tense_anxious,Distortion Guitar,5,9,3
+afdb,04043,N,8.5,557,53,60,60,0.0,0.0,1.0,-0.96,calm_relaxed,Acoustic Guitar (nylon),14,0,0
+afdb,04043,AFIB,134.9,468,63,36,73,8.52,52.38,-0.51,0.45,tense_anxious,Distortion Guitar,6,10,0
+afdb,04126,N,18.6,757,39,57,62,1.33,0.0,0.93,-0.79,calm_relaxed,Acoustic Guitar (nylon),10,0,0
+afdb,04126,AFIB,141.9,375,79,37,80,10.6,65.82,-0.89,0.85,tense_anxious,Distortion Guitar,3,12,5
+afdb,06995,N,17.8,723,40,57,62,1.22,0.0,0.93,-0.81,calm_relaxed,Acoustic Guitar (nylon),10,0,0
+afdb,06995,AFIB,122.8,537,55,38,72,7.98,50.91,-0.45,0.31,tense_anxious,Distortion Guitar,6,7,1
+afdb,08455,N,8.3,762,38,60,60,0.0,0.0,1.0,-0.96,calm_relaxed,Acoustic Guitar (nylon),10,0,0
+afdb,08455,AFIB,99.9,493,59,44,74,5.86,30.51,0.07,0.02,happy_excited,Marimba,11,4,0
+mitdb,201,N,64.1,1202,24,57,62,1.94,0.0,0.89,-0.69,calm_relaxed,Acoustic Guitar (nylon),6,0,0
+mitdb,201,AFIB,194.3,595,50,36,73,9.82,52.0,-0.58,0.76,tense_anxious,Distortion Guitar,3,9,1
+mitdb,202,N,37.4,1066,27,55,62,1.99,0.0,0.89,-0.65,calm_relaxed,Acoustic Guitar (nylon),7,0,0
+mitdb,202,AFIB,146.9,481,61,36,75,7.62,32.79,-0.07,0.44,tense_anxious,Distortion Guitar,9,5,2

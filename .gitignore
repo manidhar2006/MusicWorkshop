@@ -1,6 +1,5 @@
 # Python environments and caches
-venv/
-venv_m2e/
+venv*/
 __pycache__/
 .ipynb_checkpoints/
 
@@ -15,3 +14,9 @@ external/
 
 # Analyses of your own ECG files can contain personal health data
 output/analysis/
+
+# Listening-study material: 16 blinded mp3s and the key that maps them back to the recordings.
+# Regenerate with `python -m ecgmusic.build_study`, which is deterministic. KEY.csv is NOT
+# committed on purpose: this repository is public, so publishing it would let a participant look
+# up which clip is which and the study would no longer be blind.
+output/listening_study/
