@@ -21,7 +21,7 @@ why, and what is next.
 | Code | ✅ Run and verified | Ran end to end on 2026-10-08. All 14 examples reproduce [§11.1](project_description.md#111-heartbeats-music-and-our-model) exactly. Now a single notebook. |
 | Results | ✅ Reproduced | 14 clips from 7 recordings of 6 people, in [project_description.md §11](project_description.md#11-results). Regenerated 2026-10-08; every figure matches. |
 | Documentation | ✅ Done | [Plan.md](Plan.md) (start here), [README.md](README.md), [project_description.md](project_description.md), this file. |
-| [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) | ✅ The project, executed | Every stage in one self-contained notebook, 60 cells, saved with its outputs from a full run (audio on, all 14 pieces, study set built). Replaced the `ecgmusic/` package and `main.ipynb`. |
+| [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) | ✅ The project, executed | Every stage in one self-contained notebook, 60 cells, saved with outputs. Switches off, so it opens fast and re-runs in under a minute. Replaced the `ecgmusic/` package and `main.ipynb`. |
 | Listening study | ✅ Ready to circulate | 16 blinded clips in `output/listening_study/`, the Google Form spec in [listening_study_questions.md](listening_study_questions.md), and `ecgmusic/listening_study.py` for the analysis. No listeners yet. |
 | Sprint 3 submission | ✅ Written | `sprint3/`: team report `Sprint3.pdf` (3 pages) and one 1-page individual report per member (`<roll number>_Sprint3.pdf`), with their LaTeX sources. Not committed. |
 | Git | ✅ Committed, not pushed | All work was committed on 2026-10-01 at the user's request, on the branch `claude/inner-emotion-rewrite`. Nothing has been pushed to GitHub yet. |
@@ -77,8 +77,11 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
   columns and identical values to the committed versions; the clip numbering is unchanged, so the
   mp3s already prepared are still valid. The only difference is line endings: the old files came
   from Python's `csv` module (CRLF), the notebook writes via pandas (LF).
-- **The switches are now `True` in the committed notebook**, matching the saved outputs. Set them
-  to `False` for a fast read-only open.
+- **Switches then set back to `False`** at the user's request, and the notebook re-executed in
+  that configuration (43 s) so the saved outputs match the switches shown. It still streams 04043,
+  composes both clips, draws all five figures, and loads the 14-row result table from
+  `output/examples_summary.csv`. The audio, score plots and study mp3s from the full run stay on
+  disk; a reader sees real results without a four-minute wait.
 
 ### 2026-10-09 · The notebook replaces the package
 
