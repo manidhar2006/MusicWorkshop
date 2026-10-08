@@ -59,7 +59,7 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
 
 ## Log
 
-### 2026-10-09 · README and project_description brought up to date
+### 2026-10-09 · Documentation brought up to date
 
 - Rewrote [README.md](README.md) around the project as it now stands, rather than as it was.
 - **Added:** a status line at the top; record 219 written up in §7 as a result rather than an
@@ -92,7 +92,25 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
 - **§17** gained a status column saying what has and has not been reproduced, the exact toolchain
   the 8 October run used, and a note that the study build is deterministic, so a rebuild never
   invalidates a form already circulated.
-- 1086 lines. Cross-file anchors between all five documents were checked too; all resolve.
+- 1086 lines.
+
+**[Plan.md](Plan.md)**, the same pass:
+
+- The story now runs to 9 October: the consolidation into one notebook, the full run with audio,
+  the two defects it surfaced, and the documentation pass. It ends with where that leaves the
+  project — the sonification half finished and verified, everything now waiting on listeners.
+- **Status table:** git is committed and pushed rather than uncommitted; the listening study is
+  marked "no listeners yet" as the whole of what remains; the Essentia/music2emo row is named as
+  the only part of the results not independently verified.
+- **Step 1 rewritten as four concrete actions** — upload the clips, duplicate the form section
+  fifteen times, pilot, analyse — because the preparation is now done and only circulation
+  remains.
+- Step 2 notes the audio it needs is already rendered; Step 3 says where to add records.
+- The deliverable section drops the dead `analyze_file` reference and names the clearest example
+  pair to play.
+- 437 lines.
+
+Cross-file anchors between all five documents were checked; all resolve.
 
 ### 2026-10-09 · Full run with audio
 

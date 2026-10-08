@@ -2,7 +2,7 @@
 
 **Inner emotion detection from ECG through music:** ECG data → Heartbeats → Music → Emotion
 
-**Written:** 2026-10-08 · Overview: [README.md](README.md) · Full detail:
+**Written:** 2026-10-08 · **Updated:** 2026-10-09 · Overview: [README.md](README.md) · Full detail:
 [project_description.md](project_description.md) · Session log: [Progress.md](Progress.md)
 
 This file is the single place to understand the project from the beginning, what it has actually
@@ -145,8 +145,23 @@ Sprint 3 reports written and compiled. Then, on 8 October:
   project more novel, and there was no working prototype to switch.
 - **Ran the code.** The venv turned out to be broken — built against Python 3.12, which no longer
   exists on this system. Rebuilt it, and the pipeline ran end to end.
-- **All 14 examples reproduced the published numbers exactly.**
-- Built the listening study.
+- **All 14 examples reproduced the published numbers exactly.** That closed the biggest risk the
+  project had been carrying: a codebase written without ever being executed.
+- Built the listening study: 16 blinded clips, the Google Form, the analysis.
+
+### 9 October
+
+- **Consolidated everything into one notebook.** `sonifying_the_heart.ipynb` replaced the
+  `ecgmusic` package and the old walkthrough; it imports nothing and runs top to bottom. Every
+  reference across the four documents was updated to match.
+- **Ran it with audio on.** 32 WAVs, 32 MIDI files, 16 score plots, 16 study mp3s. Two defects
+  surfaced and were fixed: record 219 was composed but never saved, which would have silently
+  produced a 14-clip study set instead of 16 and dropped the hidden control; and the study key had
+  lost its model columns.
+- **Brought the documentation up to date** — README, project_description and this file.
+
+**Where that leaves us:** the sonification half is finished and verified. Everything now waits on
+listeners.
 
 ---
 
@@ -158,22 +173,28 @@ Sprint 3 reports written and compiled. Then, on 8 October:
 | Stage 2: Heartbeats | ✅ Done | Annotations or XQRS; clip selection survives `afdb`'s jittery marks. |
 | Stage 3: Music | ✅ Done | Melody, arrangement, MIDI, audio, score plots. |
 | Stage 4: Emotion | ✅ Built · ⬜ not validated | Three models. Never compared against what anyone actually felt. |
-| Code | ✅ Run and verified | 14/14 examples match §11.1 exactly, 8 October. Now one notebook. |
-| Essentia / music2emo tables | 🟨 Not re-run | §11.2 and §11.3 still rest on the first implementation. |
-| Listening study | ✅ Built, ⬜ no listeners | 16 blinded clips, form questions, analysis script. |
-| Documentation | ✅ Done | README, project_description, Progress, this file. |
-| Git | 🟨 Uncommitted | Today's work is not committed. |
+| Code | ✅ Run and verified | 14/14 examples match §11.1 exactly. One self-contained notebook, 60 cells, saved with its outputs. |
+| Essentia / music2emo tables | 🟨 Not re-run | §11.2 and §11.3 still rest on the first implementation. The only part of the results not independently verified. |
+| Listening study | ✅ Built · ⬜ **no listeners yet** | 16 blinded clips rendered, the Google Form written out, the analysis written and tested. This is the whole of what remains. |
+| Documentation | ✅ Done | README, project_description, Progress, this file — all current as of 9 October. |
+| Git | ✅ Committed and pushed | On `main` at github.com/manidhar2006/MusicWorkshop. |
 
 ### What exists on disk
 
 ```
-sonifying_the_heart.ipynb       THE PROJECT — every stage, self-contained, 59 cells
+sonifying_the_heart.ipynb       THE PROJECT — every stage, self-contained, 60 cells, with outputs
 listening_study_questions.md    the Google Form, ready to build
-output/examples/                16 pieces: MIDI + score PNG
+output/examples/                16 pieces: MIDI + score PNG (+ WAV locally)
 output/listening_study/         16 blinded mp3s + KEY.csv
-project_description.md          the full description, 18 sections
+output/examples_summary.csv     the §11.1 results table
+output/record219_excluded.csv   the control record, kept out of the headline table
 README.md                       overview, setup, resources
+project_description.md          the full description, 18 sections
+Progress.md                     dated log of every working session
 ```
+
+Nothing else is needed to run the project. The `.wav` files and the study `.mp3`s are regenerable
+and stay out of git; `KEY.csv` is committed so the clip mapping survives a fresh clone.
 
 ---
 
@@ -181,8 +202,9 @@ README.md                       overview, setup, resources
 
 ### Shown
 
-1. **The sonification is faithful and reproducible.** The same rules, independently reimplemented,
-   produce identical numbers on all 14 clips.
+1. **The sonification is faithful and reproducible.** The same rules, independently
+   reimplemented, produce identical numbers on all 14 clips — confirmed by a full run on
+   8 October and twice more since.
 2. **The music separates the two rhythms, every time.** Every normal melody stays entirely within
    the scale, with a pitch standard deviation of at most 2 semitones; three never leave C4. Every
    AFib melody leaves the scale for 31–66% of its notes. All 67 chords under the normal pieces are
@@ -200,7 +222,7 @@ README.md                       overview, setup, resources
 ### Not shown
 
 1. **That any listener can hear any of this.** Every claim above is a measurement on our own
-   output. No human has been asked.
+   output. No human has been asked. The study to ask them is built and waiting.
 2. **That the music's emotion reflects the person's emotion.** This is the project's central
    hypothesis and it is untested. The databases we use contain no emotional or psychological data
    at all, so it *cannot* be tested on them.
@@ -245,9 +267,18 @@ This is the part that matters. Each step is listed with what it costs and, more 
 
 ### Step 1 — Run the listening study · *the one that finishes Project 1*
 
-**Do:** circulate the form in
-[listening_study_questions.md](listening_study_questions.md), collect 20–30 responses, run
-the analysis in §11 of the notebook.
+**Everything is prepared.** The 16 clips are rendered and blinded, the form is written out
+question by question, and the analysis is written and tested. What is missing is listeners.
+
+**Do:**
+
+1. Upload `output/listening_study/clip_01.mp3` … `clip_16.mp3` to a Drive folder set to *Anyone
+   with the link → Viewer*.
+2. Build the form from [listening_study_questions.md](listening_study_questions.md) — build
+   section 1 fully, then *Duplicate section* fifteen times and change the number. Keep the
+   question titles exactly as written; the analysis finds each column by the `clip_NN` in it.
+3. Pilot on two or three people, then circulate. 20–30 responses is plenty.
+4. Download the CSV, save it as `responses.csv` beside the notebook, run §11.
 
 **Cost:** one class session. No compute, no dataset access, no approvals.
 
@@ -280,8 +311,11 @@ cross-check over `output/examples/*/melody.wav`.
 environment.
 
 **What we could conclude:** §11.2 and §11.3 currently rest on the first implementation. If the
-regenerated audio reproduces them, the *whole* results section is verified rather than two thirds
-of it. If it does not, we have found a discrepancy worth investigating before anyone else does.
+regenerated audio reproduces them, the *whole* results section is verified rather than most of it.
+If it does not, we have found a discrepancy worth investigating before anyone else does.
+
+The audio they need is already rendered — `output/examples/*/melody.wav` and `arrangement.wav`
+exist after a full notebook run — so this is only the cost of the models themselves.
 
 ---
 
@@ -289,7 +323,8 @@ of it. If it does not, we have found a discrepancy worth investigating before an
 
 **Do:** extend from 5 `afdb` records to the ~21 that have at least 30 seconds of both rhythms.
 
-**Cost:** almost nothing — same light command, streaming plus numpy.
+**Cost:** almost nothing — add the records to `EXAMPLE_RECORDS` in §2 of the notebook and re-run.
+Streaming plus numpy; no audio needed to get the §11.1-style table.
 
 **What we could conclude:** "7 of 7 recordings" becomes "n of 21", roughly tripling the evidence
 base for every claim in §11.1. It would also stress-test clip selection and will probably surface
@@ -350,13 +385,17 @@ and it is a prerequisite for the tool ever being pointed at a healthy person.
 ### Priority
 
 ```
-Step 1  Listening study        ← do this first; it finishes Project 1
+Step 1  Listening study        ← everything is ready; it needs listeners, nothing else
 Step 3  Widen the records      ← nearly free, do it alongside
-Step 2  Re-run the models      ← when compute allows
+Step 2  Re-run the models      ← the audio is already rendered
 Step 4  Tune by ear            ← the music-course deliverable
 Step 6  Healthy-heart mapping  ← if time allows
 Step 5  Full validation        ← future work; name it, don't start it
 ```
+
+**If only one thing happens, make it Step 1.** It is the only step that puts a human in the loop,
+it is the only one that can be finished in a single session, and it is the one that turns "we
+built a translation" into "we built a translation and tested it."
 
 ---
 
@@ -384,12 +423,13 @@ Three options, not mutually exclusive.
 need editing down rather than writing. Add the listening-study result and it is finished.
 
 **A presentation with live audio.** Thirty seconds of a normal clip against thirty seconds of the
-same person's AFib clip makes the point faster than any table. The score plots are good enough to
-project.
+same person's AFib clip makes the point faster than any table. The audio is rendered and the score
+plots are already projectable — `output/examples/04043_N/` and `04043_AFIB/` are the clearest
+pair, and record 219 is the one that makes an audience sit up.
 
-**A live demo.** `analyze_file` already takes any WFDB or CSV ECG file, detects beats with XQRS,
-and produces music plus a score in one command. Dropping in a file and playing the result is a
-strong five minutes, and the code for it is written and now verified to run.
+**A live demo.** `clip_from_signal` takes any WFDB or CSV ECG file and finds the beats with XQRS,
+no annotations needed; `compose` and `save` do the rest. Dropping in a file and playing the result
+is a strong five minutes, and the code is written and verified to run.
 
 ---
 
