@@ -15,6 +15,9 @@ external/
 # Analyses of your own ECG files can contain personal health data
 output/analysis/
 
+# sonifying_the_heart.ipynb writes here, so a notebook run never disturbs output/
+output_nb/
+
 # The study's 16 blinded mp3s: regenerate with `python -m ecgmusic.build_study`, which is
 # deterministic. KEY.csv and key.json are tracked, so the mapping survives a fresh clone.
 output/listening_study/*.mp3

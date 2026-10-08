@@ -2,7 +2,7 @@
 
 **Inner emotion detection from ECG through music**: ECG data → Heartbeats → Music → Emotion
 
-**Last updated:** 2026-10-08 · Full description: [project_description.md](project_description.md) ·
+**Last updated:** 2026-10-09 · Full description: [project_description.md](project_description.md) ·
 Overview and setup: [README.md](README.md)
 
 This log is updated after every work session. Newest entry first. Each entry says what changed,
@@ -21,6 +21,7 @@ why, and what is next.
 | Code: `ecgmusic/` and `main.ipynb` | ✅ Run and verified | Ran end to end on 2026-10-08 in a new venv. All 14 examples reproduce [§11.1](project_description.md#111-heartbeats-music-and-our-model) exactly. |
 | Results | ✅ Reproduced | 14 clips from 7 recordings of 6 people, in [project_description.md §11](project_description.md#11-results). Regenerated 2026-10-08; every figure matches. |
 | Documentation | ✅ Done | [Plan.md](Plan.md) (start here), [README.md](README.md), [project_description.md](project_description.md), this file. |
+| `sonifying_the_heart.ipynb` | ✅ Written and run | The whole project in one self-contained notebook, 57 cells. Runs top to bottom; no imports from `ecgmusic/`. |
 | Listening study | ✅ Ready to circulate | 16 blinded clips in `output/listening_study/`, the Google Form spec in [listening_study_questions.md](listening_study_questions.md), and `ecgmusic/listening_study.py` for the analysis. No listeners yet. |
 | Sprint 3 submission | ✅ Written | `sprint3/`: team report `Sprint3.pdf` (3 pages) and one 1-page individual report per member (`<roll number>_Sprint3.pdf`), with their LaTeX sources. Not committed. |
 | Git | ✅ Committed, not pushed | All work was committed on 2026-10-01 at the user's request, on the branch `claude/inner-emotion-rewrite`. Nothing has been pushed to GitHub yet. |
@@ -57,6 +58,31 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
 ---
 
 ## Log
+
+### 2026-10-09 · One self-contained notebook; WAVs removed
+
+- **Removed the generated WAV files** at the user's request: `output/` went from 187 MB to 8.2 MB.
+  They were already gitignored, so nothing changed in git, and the 16 study mp3s were untouched.
+  `python -m ecgmusic build` regenerates them. Note that `build_study.py` reads `melody.wav`, so
+  rebuilding the blinded clip set now needs that run first.
+- **Wrote [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb)** — the user asked for one
+  notebook holding everything, rather than code spread across modules. 57 cells (28 markdown,
+  29 code), self-contained: it imports nothing from `ecgmusic/` and duplicates the full pipeline
+  inline, so it can be read, run or handed over on its own.
+  - Every parameter in one cell with the reasoning beside it; the sonification rule written out
+    as a formula; a sanity-check table showing deviation → pitch before any heartbeat is involved.
+  - Covers all four stages, the full 14-piece experiment, record 219, and the listening study
+    (building the blinded set and analysing the ratings).
+  - Expensive steps sit behind `RENDER_AUDIO`, `BUILD_ALL` and `BUILD_STUDY`, all off by default.
+  - Writes to `output_nb/`, now gitignored, so a notebook run never disturbs `output/`.
+  - Closes with what the project has and has not shown, stated plainly.
+- **Verified, not assumed.** Every code cell compiles; the notebook was then extracted and
+  executed top to bottom. It reproduces 04043 (RMSSD 8.5 / 134.9 ms, calm / tense, chords 14/0/0
+  and 6/10/0), the 7-of-7 valence and arousal result, and record 219's inversion. `analyse_ratings`
+  was exercised separately on synthetic listeners; those numbers were fake and were deleted.
+- **Still open:** the user asked for the notebook "instead of modular py files", but `ecgmusic/`
+  and `main.ipynb` were left in place rather than deleted — that choice is theirs to confirm.
+- **Not done:** Essentia and music2emo still not re-run.
 
 ### 2026-10-08 · The code runs, and the listening study is built
 
