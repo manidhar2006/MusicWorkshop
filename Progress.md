@@ -59,6 +59,20 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
 
 ## Log
 
+### 2026-10-09 · README brought up to date
+
+- Rewrote [README.md](README.md) around the project as it now stands, rather than as it was.
+- **Added:** a status line at the top; record 219 written up in §7 as a result rather than an
+  omission, with the conclusion it supports ("the music is an instrument for noticing things the
+  label does not carry"); a new §8.3 on the listening study with the four possible outcomes and
+  what each would mean; §8.4 for the dataset validation that follows; §9.5, the study workflow end
+  to end from building the clips to running the analysis.
+- **Fixed:** a broken project-structure tree left over from removing the package — it still listed
+  `pipeline.py` and `__main__.py`; a stale `--no-audio` flag from the deleted command line; a
+  dangling §9.5 anchor; and the gitignore list, which named `venv/` and omitted the study mp3s
+  and `responses.csv`.
+- Every relative link and in-page anchor was re-checked; all resolve. 788 lines.
+
 ### 2026-10-09 · Full run with audio
 
 - Ran the notebook end to end with `RENDER_AUDIO` and `BUILD_ALL` on, via `nbclient`, and saved

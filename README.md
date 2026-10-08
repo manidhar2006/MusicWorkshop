@@ -16,8 +16,16 @@ models.
 - **Course:** Music Workshop
 - **Start here:** [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) is the whole project in
   one self-contained notebook — every stage, with explanations, run top to bottom.
+- **Where it stands:** [Plan.md](Plan.md) — what the project has shown, what it has not, and what
+  each remaining step would let us conclude.
 - **In depth:** [project_description.md](project_description.md) is the full description (design,
   results, validation plan, ethics). [Progress.md](Progress.md) is the dated log of the work.
+
+**Status (9 October 2026).** All four stages are built and the code runs end to end, reproducing
+every published result exactly. The music reliably separates a steady heart from an irregular one
+in all 7 recordings. What has **not** been tested is whether a human listener can hear that
+difference — a blind listening study is built and waiting for listeners
+([§8.3](#83-the-listening-study-the-next-step)).
 
 ---
 
@@ -31,6 +39,7 @@ models.
 6. [Stage 4: Emotion, read from the music](#6-stage-4-emotion-read-from-the-music)
 7. [Results](#7-results)
 8. [Validation status: how far does it detect inner emotion?](#8-validation-status-how-far-does-it-detect-inner-emotion)
+   - [8.3 The listening study: the next step](#83-the-listening-study-the-next-step)
 9. [Getting started](#9-getting-started)
 10. [Project structure](#10-project-structure)
 11. [Available resources](#11-available-resources)
@@ -120,7 +129,7 @@ database ideal for comparing a steady and an irregular heart in the same person.
 only the parts that are needed: the annotations plus 30 seconds of signal, a few hundred
 kilobytes per record. Downloading the full databases (~720 MB) is optional.
 
-Your own ECG recordings work too (see [§9.5](#95-your-own-ecg-file)). Who the PhysioNet recordings
+Your own ECG recordings work too (see [§9.5](#94-your-own-ecg-file)). Who the PhysioNet recordings
 come from, and what that means for using this with other people, is covered in
 [project_description.md §14](project_description.md#14-where-the-data-comes-from-and-ethics).
 
@@ -290,7 +299,8 @@ Two independent models, trained on real music by other researchers, also listen 
 
 ## 7. Results
 
-All 14 clips, from 7 recordings of 6 people:
+All 14 clips, from 7 recordings of 6 people. Every number below was reproduced exactly by the
+current code on 8 October 2026 — valence, arousal and chord counts alike.
 
 | Recording | Rhythm | Heartbeats: RMSSD (ms) | Music: notes outside the scale | Music: chords (consonant / tense / chaotic) | Emotion (valence, arousal) |
 |---|---|---|---|---|---|
@@ -354,6 +364,18 @@ Disagreement between music-emotion models is a known open problem in the field.
 
 - **Reproduced.** They were produced by the project's first implementation, and reproduced
   exactly on 2026-10-08 by the current code — every valence, arousal and chord count.
+
+**One record is deliberately left out, and it is the most interesting result we have.** `mitdb`
+record 219 has both rhythms, but even its steadiest window labelled *normal* has an RMSSD of
+**270.6 ms** — nearly twice its AFib clip at 145.9 ms. Its annotations explain why: **133
+non-conducted P-waves**, a genuine irregularity the label does not capture. Every stage of the
+pipeline flagged the record independently: the emotion model reads its *normal* clip as **tense**
+and its AFib clip as **calm**, and the harmony follows (3/2/2 against 9/1/0).
+
+The pipeline is reflecting the actual rhythm rather than the label. That is why the claim this
+project makes is not "we detect atrial fibrillation" — algorithms already do that better — but
+that **the music is an instrument for noticing things about the rhythm that the label does not
+carry.**
 - **Essentia correction:** the "sad" and "relaxed" readings were corrected on 2026-10-01. The first
   version read the wrong output column of those two classifiers; the details are in
   [Progress.md](Progress.md).
@@ -365,14 +387,14 @@ Disagreement between music-emotion models is a known open problem in the field.
 
 ## 8. Validation status: how far does it detect inner emotion?
 
-**What has been shown:**
+### 8.1 What has been shown
 
 - The pipeline turns heartbeats into music that reliably differs between a steady and an
   irregular heart, in every recording tested.
 - Three independent methods hear that difference.
 - The emotion read from the music moves consistently with the heart's rhythm.
 
-**What has not been shown yet:**
+### 8.2 What has not been shown yet
 
 - **The music's emotion has not been checked against how people actually felt.** The MIT-BIH
   recordings come from heart patients in the 1970s–80s and contain no emotion reports. Our
@@ -385,9 +407,46 @@ Disagreement between music-emotion models is a known open problem in the field.
   could mis-read this healthy, calm variability as tense.
 - **The three emotion models disagree** on the exact emotion (see [§7](#7-results)).
 
-**The next step** is to run the pipeline on ECG datasets that come with people's own emotion
-ratings, compare the detected emotion with what participants reported, and recalibrate the
-mapping:
+### 8.3 The listening study: the next step
+
+Everything above is a measurement on our own output. **No human has been asked whether any of it
+is audible** — and for a sonification, that is the gap that matters most. It is also the cheapest
+one to close: no compute, no dataset access, no approvals.
+
+The study is built and ready to run:
+
+- **16 clips** — the 14 published pieces, plus both record 219 clips as a hidden control.
+- **The plain melody, on piano**, never the instrument the emotion model chose. Otherwise a
+  listener calling a clip "tense" might only be reacting to a distortion guitar, and the test
+  would be circular.
+- Renamed `clip_01`…`clip_16` in one fixed random order, with no two clips from the same
+  recording adjacent.
+- **Four questions per clip:** pleasantness (1–9), energy (1–9), a forced choice between
+  calm/tense/happy/sad, and perceived rhythmic steadiness (1–9). The last one separates two
+  different claims — *can they hear the irregularity* and *does it change how they feel*.
+- Listeners are told nothing about hearts until they finish.
+
+[listening_study_questions.md](listening_study_questions.md) has the whole Google Form ready to
+build, and §11 of the notebook reads the Forms export back and runs the analysis.
+
+**Every outcome tells us something:**
+
+| Outcome | What it would mean |
+|---|---|
+| Listeners track the model on both axes | The translation works end to end; the sonification reaches an untrained ear. |
+| They hear the irregularity but their emotion ratings don't move | The mapping is *audible* but not *affective*. We would have located the break precisely. |
+| They hear nothing reliable | The mapping is measurable but not perceptible — a real finding about sonification design. |
+| Only trained musicians separate them | The information is there but needs a trained ear. |
+
+And if listeners rate record 219's *normal*-labelled clip as the less steady one, our strongest
+finding upgrades from "our algorithm disagreed with a database label" to **"human listeners
+agreed with our algorithm against the label."**
+
+### 8.4 Validating against emotion-labelled data
+
+Beyond that, the real test of the inner-emotion claim is to run the pipeline on ECG datasets that
+come with people's own emotion ratings, compare the detected emotion with what participants
+reported, and recalibrate the mapping:
 
 | Dataset | People | ECG | Emotion labels |
 |---|---|---|---|
@@ -462,13 +521,35 @@ Harmony: 13 consonant, 0 tense, 0 chaotic chords
 The results, the same three files as each example, go to `output/analysis/<name>/`. That folder
 is kept out of git because a real person's ECG is personal health data.
 
+### 9.5 Running the listening study
+
+The complete workflow, start to finish:
+
+1. **Build the clips.** Set `RENDER_AUDIO`, `BUILD_ALL` and `BUILD_STUDY` to `True` at the top of
+   the notebook and run every cell. About four minutes. This writes
+   `output/listening_study/clip_01.mp3` … `clip_16.mp3` and `KEY.csv`.
+2. **Build the form.** [listening_study_questions.md](listening_study_questions.md) has the title,
+   the two opening questions, the exact pattern for all 16 clip sections, the debrief text, and
+   how to host the audio. Keep the question titles exactly as written — the analysis finds each
+   column by the `clip_NN` in its header.
+3. **Collect responses.** Twenty to thirty people is plenty; the main test is paired, so it does
+   not need a large sample. Pilot it on two or three people first.
+4. **Analyse.** Download the responses (**Responses → ⋮ → Download responses (.csv)**), save them
+   as `responses.csv` beside the notebook, and run §11. It reports the Spearman correlation
+   between the model and the listeners, a paired Wilcoxon per recording, the forced-choice hit
+   rate against the 25% chance level, and the record 219 control.
+
+**Never show `KEY.csv` to a participant.** It maps every clip back to its recording, and the study
+is only worth running blind.
+
 ### 9.6 Low-powered machines
 
 - **No data download needed.** Records are streamed (a few hundred KB each).
-- **No audio rendering needed.** `--no-audio`, or `RENDER_AUDIO = False`, gives MIDI and plots.
+- **No audio rendering needed.** `RENDER_AUDIO = False` gives MIDI and plots only.
 - **Essentia is optional.** It loads TensorFlow, so skip it on a small machine.
-- **The notebook defaults to the cheap path.** It streams the data, makes MIDI and plots only,
-  and skips the pretrained models.
+- **The notebook ships with every switch off**, so it opens already showing results and re-runs
+  in about 40 seconds: it streams one record, draws every figure, and loads the 14-row result
+  table from `output/examples_summary.csv`.
 
 ### 9.7 Optional: reproducing the music2emo results
 
@@ -502,23 +583,21 @@ pip install chordparser==0.4.2 fire==0.7.0 huggingface_hub==0.28.1 hydra-core==1
 ├── Progress.md                   dated log of the work, newest first
 ├── listening_study_questions.md  the Google Form for the listening study
 ├── requirements.txt
-│   ├── pipeline.py               chains the stages
-│   └── __main__.py               command line
-└── output/                       created by the pipeline (not in the repository yet)
+├── Sprint1.pdf, Sprint2.pdf, sprint3/   course submissions
+└── output/                       written by the notebook
     ├── examples/<record>_<rhythm>/   melody.mid, arrangement.mid, score.png (+ .wav when built)
     ├── examples_summary.csv          per-clip heartbeat, music and emotion results
-    ├── essentia_results.csv          Essentia readings of every melody and arrangement
-    └── music2emo_results.csv         music2emo readings of every melody
+    ├── record219_excluded.csv        the excluded record, kept separate from the headline table
+    └── listening_study/              clip_01..clip_16.mp3 and KEY.csv
 ```
 
 These are created locally and kept out of git:
 
-- `venv/`
-- `data/` (PhysioNet downloads)
-- `models/` (Essentia weights)
-- `external/` (music2emo)
-- all `.wav` audio
-- `output/analysis/`
+- `venv*/` (virtual environments)
+- `data/` (PhysioNet downloads), `models/` (Essentia weights), `external/` (music2emo)
+- all `.wav` audio — regenerate with `RENDER_AUDIO = True`
+- the study's `.mp3` files — regenerate from §11 of the notebook, which is deterministic
+- `output/analysis/` and `responses.csv`, which can contain personal data
 
 ---
 
@@ -541,7 +620,8 @@ Running the notebook writes these to `output/`:
 | `output/examples/<record>_<rhythm>/` | 14 pieces, one folder each, e.g. `04043_N` and `04043_AFIB`: `melody.mid`, `arrangement.mid`, `score.png`, plus `.wav` files when audio is rendered |
 | `output/examples_summary.csv` | Per clip: RMSSD, mean R-R, notes, pitch range and spread, % chromatic, valence, arousal, emotion, instrument, chord counts |
 | `output/essentia_results.csv` | Per clip and per render: happy, sad, relaxed and aggressive probabilities; DEAM valence and arousal (only when Essentia runs) |
-| `output/music2emo_results.csv` | Per clip: music2emo valence, arousal and mood tags (written by the separate music2emo step, [§9.7](#97-optional-reproducing-the-music2emo-results)) |
+| `output/record219_excluded.csv` | The same per-clip figures for record 219, kept out of the headline table ([§7](#7-results)) |
+| `output/listening_study/` | `clip_01.mp3` … `clip_16.mp3`, the blinded set, and `KEY.csv` mapping each back to its recording — **never show the key to participants** |
 
 MIDI files open in any DAW, in MuseScore, or in an online MIDI player. Until the pipeline has
 been run, the results are in [project_description.md §11](project_description.md#11-results).
@@ -694,7 +774,14 @@ The full, dated story is in [Progress.md](Progress.md). In short:
 6. **Any ECG file.** Added XQRS heartbeat detection and checked it against expert annotations.
 7. **Rewrite.** Rewrote everything from scratch, and later consolidated it into the single
    notebook [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb).
-8. **Inner emotion detection.**
+8. **One notebook.** Consolidated the whole project into
+   [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb), self-contained and runnable top to
+   bottom, and removed the module structure.
+9. **Verification.** Ran the code end to end for the first time since the rewrite. All 14
+   examples reproduced the published results exactly.
+10. **The listening study.** Built the blinded 16-clip set, the Google Form and the analysis — the
+    first test that puts a human in the loop.
+11. **Inner emotion detection.**
    - Reframed the documentation around ECG data → Heartbeats → Music → Emotion, and wrote
      [project_description.md](project_description.md).
    - Fixed two errors found along the way. Essentia's "sad" and "relaxed" readings were inverted.
