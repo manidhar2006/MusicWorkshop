@@ -59,7 +59,7 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
 
 ## Log
 
-### 2026-10-09 · README brought up to date
+### 2026-10-09 · README and project_description brought up to date
 
 - Rewrote [README.md](README.md) around the project as it now stands, rather than as it was.
 - **Added:** a status line at the top; record 219 written up in §7 as a result rather than an
@@ -72,6 +72,27 @@ Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
   dangling §9.5 anchor; and the gitignore list, which named `venv/` and omitted the study mp3s
   and `responses.csv`.
 - Every relative link and in-page anchor was re-checked; all resolve. 788 lines.
+
+**[project_description.md](project_description.md)**, the same pass:
+
+- **§1 Summary** now separates the two untested questions, which had been run together: whether a
+  *listener* can hear the difference, and whether the music's emotion matches the *person's*. Only
+  the second needs new datasets.
+- **§10** records that the reproduction happened, and is explicit that §11.2 and §11.3 have not
+  been re-run, so they still rest on the first implementation.
+- **§11.5** connects record 219 to its new role as the listening study's hidden control.
+- **§13 split into §13.1 and §13.2.** The listening study comes first, with its design, what it
+  reports, and what each of the four outcomes would mean; the dataset validation follows. A stale
+  `analyze_signal()` call in the protocol was corrected to `clip_from_signal()` + `compose()`.
+- **§15** gained "never tested on a listener" as a limitation in its own right, and narrowed the
+  reproduction caveat to Essentia and music2emo.
+- **§16 Future work** reordered: the listening study is first, re-running the pretrained models
+  second, widening to ~21 `afdb` records third. The healthy-heart item now names the handle —
+  respiratory sinus arrhythmia sits at 0.15–0.4 Hz while AFib is irregular at every timescale.
+- **§17** gained a status column saying what has and has not been reproduced, the exact toolchain
+  the 8 October run used, and a note that the study build is deterministic, so a rebuild never
+  invalidates a form already circulated.
+- 1086 lines. Cross-file anchors between all five documents were checked too; all resolve.
 
 ### 2026-10-09 · Full run with audio
 

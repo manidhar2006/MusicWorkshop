@@ -29,6 +29,8 @@
 11. [Results](#11-results)
 12. [Discussion: from the music's emotion to inner emotion](#12-discussion-from-the-musics-emotion-to-inner-emotion)
 13. [Validation plan](#13-validation-plan)
+    - [13.1 The listening study](#131-the-listening-study-built-and-ready)
+    - [13.2 Against self-reported emotion](#132-against-self-reported-emotion)
 14. [Where the data comes from, and ethics](#14-where-the-data-comes-from-and-ethics)
 15. [Limitations](#15-limitations)
 16. [Future work](#16-future-work)
@@ -70,9 +72,23 @@ a natural, expert-labelled example of an irregular heart.
   - Essentia hears the AFib pieces as livelier and more positive.
   - music2emo hears them as less pleasant and less energetic.
   - No two methods agree on both valence and arousal.
-- **Not yet tested:** whether the emotion of the music matches the emotion of the person. The
-  recordings come with no emotion reports. [§13](#13-validation-plan) sets out how to test this
-  with ECG datasets that have them (WESAD, DREAMER, AMIGOS).
+- **A record the pipeline disputed, and was right about.** `mitdb` record 219 is excluded from
+  the headline table because the window its database labels *normal* is more irregular than its
+  AFib window — 133 non-conducted P-waves. Every stage flagged it independently
+  ([§11.5](#115-the-excluded-record-219)).
+
+**Two things are not yet tested, and they are different questions.**
+
+- **Whether a listener can hear any of this.** Everything above is a measurement on our own
+  output. A blind listening study is built and waiting for listeners
+  ([§13.1](#131-the-listening-study-built-and-ready)); record 219 sits in it as a hidden control.
+- **Whether the emotion of the music matches the emotion of the person.** The recordings come
+  with no emotion reports, so this cannot be tested on them at all.
+  [§13.2](#132-against-self-reported-emotion) sets out how to test it with ECG datasets that have
+  them (WESAD, DREAMER, AMIGOS).
+
+The code reproduces every figure in [§11.1](#111-heartbeats-music-and-our-model) exactly
+([§17](#17-reproducing-the-results)).
 
 ---
 
@@ -541,8 +557,10 @@ or lower than the same recording's normal piece, on valence and on arousal?
 >   - Essentia's "sad" and "relaxed" values ([§9.3](#93-second-opinion-essentia)).
 >   - The finding that `mitdb` records 201 and 202 come from the same person, which changes
 >   "7 people" to 6.
-> - **Next:** running the pipeline again ([§17](#17-reproducing-the-results)) should reproduce
->   these tables.
+> - **Confirmed.** On 8 October 2026 the pipeline was run end to end and reproduced
+>   [§11.1](#111-heartbeats-music-and-our-model) exactly — all 14 rows, every valence, arousal and
+>   chord count. [§11.2](#112-essentia) and [§11.3](#113-music2emo) have **not** been re-run, so
+>   they still rest on the first implementation.
 
 ---
 
@@ -733,6 +751,12 @@ Every method flags record 219 on its own:
 The pipeline is consistent: it reflects the actual rhythm, not the label. Here the rhythm behind
 the "normal" label is not normal.
 
+**This record is now the listening study's hidden control.** Both its clips sit unlabelled in the
+blinded set ([§13.1](#131-the-listening-study-built-and-ready)), because it is the one pair where
+the database's label and our pipeline disagree. If listeners also hear the *normal*-labelled clip
+as the less steady of the two, the finding stops being "our algorithm disagreed with an expert
+label" and becomes **"human listeners agreed with our algorithm against the label."**
+
 ---
 
 ## 12. Discussion: from the music's emotion to inner emotion
@@ -780,7 +804,59 @@ describes how to test it.
 
 ## 13. Validation plan
 
-Validation needs ECG recordings from people whose emotions were induced or self-reported at the
+Two separate questions, and they need different evidence.
+
+1. **Does the music carry the rhythm to a listener?** This is about the sonification, and a
+   listening study settles it. Cheap, and ready to run.
+2. **Does the music's emotion match the person's emotion?** This is the project's central
+   hypothesis, and it needs ECG recorded alongside people's own emotion reports.
+
+### 13.1 The listening study: built and ready
+
+Everything in [§11](#11-results) is a measurement on our own output. No human has been asked
+whether any of it is audible, and for a sonification that is the gap that matters most.
+
+**The design.**
+
+- **16 clips:** the 14 published pieces, plus both record 219 clips as a hidden control
+  ([§11.5](#115-the-excluded-record-219)).
+- **The plain melody, rendered on piano** — never the instrument our emotion model chose. This
+  removes the circularity noted in [§11.2](#112-essentia): otherwise a listener calling a clip
+  "tense" might only be reacting to a distortion guitar.
+- Renamed `clip_01`…`clip_16` in one fixed random order, no two clips from the same recording
+  adjacent, and no rhythm running four deep.
+- **Four questions per clip:** pleasantness (1–9), energy (1–9), a forced choice between
+  calm/tense/happy/sad, and perceived rhythmic steadiness (1–9).
+- Listeners are told nothing about hearts until they finish.
+
+The 1–9 scales are the ones DEAP, DREAMER and MAHNOB-HCI use, so the ratings sit on a standard
+scale. The fourth question exists to separate two claims that are easy to conflate: *can they hear
+the irregularity* and *does it change how they feel*. Without it we could not tell which step of
+the pipeline worked.
+
+**What is reported:** Spearman correlation between our model's valence/arousal and the listeners'
+means across the 16 clips; a paired Wilcoxon per recording, AFib against normal; the forced-choice
+hit rate against the 25% chance level; and the record 219 control.
+
+**Every outcome is informative.**
+
+| Outcome | Interpretation |
+|---|---|
+| Listeners track the model on both axes | The translation works end to end; the sonification reaches an untrained ear. |
+| They hear the irregularity but their emotion ratings do not move | The mapping is *audible* but not *affective*. The break is located precisely — a sharper result than a flat success. |
+| They hear nothing reliable | The mapping is measurable but not perceptible; a genuine negative finding about sonification design. |
+| Only trained musicians separate the clips | The information is there but needs a trained ear. |
+
+Twenty to thirty listeners is enough: the main test is paired, each recording contributing its own
+normal and AFib clip, which is statistically efficient.
+
+The form is written out in
+[listening_study_questions.md](listening_study_questions.md), and §11 of the notebook both builds
+the blinded set and analyses the responses.
+
+### 13.2 Against self-reported emotion
+
+This needs ECG recordings from people whose emotions were induced or self-reported at the
 time:
 
 | Dataset | People | ECG | Emotion information |
@@ -796,7 +872,8 @@ agreement.
 
 1. **Windows.** Cut each participant's ECG into windows that match the labelled conditions or
    clips, for example 30–60 seconds each.
-2. **Run Stage 1–4.** Run `analyze_signal()` on every window. It needs no annotations.
+2. **Run Stages 1–4.** `clip_from_signal()` then `compose()` on every window. No annotations
+   needed — the XQRS detector finds the beats.
 3. **Compare with what people reported.**
    - Correlate the detected valence and arousal with the self-ratings (Spearman's ρ, per person
      and pooled).
@@ -811,9 +888,9 @@ agreement.
    tense ([§12](#12-discussion-from-the-musics-emotion-to-inner-emotion)).
 7. **Report the result whatever it is.** A negative result would be an honest finding.
 
-A second, cheaper study tests the music → emotion step on its own. Listeners, for example
-classmates, rate the valence and arousal of the 14 pieces. This shows whether people hear the
-emotions our model assigns, independently of the heart.
+Run [§13.1](#131-the-listening-study-built-and-ready) first regardless. It is far cheaper, it can
+be finished in a single session, and if listeners cannot hear the difference at all then the
+dataset work is testing a step that has already failed.
 
 ---
 
@@ -894,24 +971,34 @@ project is used with any specific group:
 - **Pretrained models out of their domain.** They were trained on produced commercial music, not
   sonified heartbeats, and they disagree.
 - **Partly circular arrangement results.** The melody instrument is chosen by our own model's
-  emotion.
-- **Results not yet reproduced with the rewritten code** ([§10](#10-the-experiment)).
+  emotion. The listening study avoids this by using the plain piano melody
+  ([§13.1](#131-the-listening-study-built-and-ready)).
+- **Never tested on a listener.** Every result here is a measurement on our own output. This is
+  the gap [§13.1](#131-the-listening-study-built-and-ready) closes, and until it is closed the
+  claim that the music "carries" the rhythm is an inference, not an observation.
+- **Essentia and music2emo results not yet reproduced** with the current code
+  ([§10](#10-the-experiment)). The rest of [§11.1](#111-heartbeats-music-and-our-model) has been.
 
 ---
 
 ## 16. Future work
 
-1. **Run the rewritten pipeline** on a machine with enough compute, and confirm the tables in
-   [§11](#11-results) ([§17](#17-reproducing-the-results)).
-2. **Validate against self-reported emotion** with WESAD, DREAMER and AMIGOS
-   ([§13](#13-validation-plan)).
-3. **A listening study** with human raters, to test the music → emotion step on its own.
-4. **A mapping for healthy hearts** that tells calm, breathing-locked variability apart from
-   erratic variability. It could also use the heart rate itself as an arousal cue.
-5. **Live mode:** stream from a wearable chest strap and play the music in real time.
+1. **Run the listening study** ([§13.1](#131-the-listening-study-built-and-ready)). It is built;
+   it needs listeners. This is the next step and it finishes the sonification half of the project.
+2. **Re-run Essentia and music2emo** on the regenerated audio, so [§11.2](#112-essentia) and
+   [§11.3](#113-music2emo) are verified as [§11.1](#111-heartbeats-music-and-our-model) now is.
+3. **Widen the evidence.** 21 of the 23 signal-bearing `afdb` records have at least 30 seconds of
+   both rhythms; we use 5. Extending costs almost nothing and roughly triples the evidence base.
+4. **Validate against self-reported emotion** with WESAD, DREAMER and AMIGOS
+   ([§13.2](#132-against-self-reported-emotion)).
+5. **A mapping for healthy hearts** that tells calm, breathing-locked variability apart from
+   erratic variability. Respiratory sinus arrhythmia oscillates at breathing rate, roughly
+   0.15–0.4 Hz, while AFib is irregular at every timescale — that difference is the handle.
 6. **Musical refinement by ear:** the 12% scale threshold, the 85% note length, the 12% and 25%
-   chord thresholds, and the instrument choices.
-7. *(From the proposal, optional)* let an LLM suggest alternative mappings to try.
+   chord thresholds, and the instrument choices. Every parameter so far has been justified by what
+   it *measures*, not by how it *sounds*.
+7. **Live mode:** stream from a wearable chest strap and play the music in real time.
+8. *(From the proposal, optional)* let an LLM suggest alternative mappings to try.
 
 ---
 
@@ -926,8 +1013,10 @@ pip install -r requirements.txt
 jupyter notebook sonifying_the_heart.ipynb
 ```
 
-Then set `RENDER_AUDIO` and `BUILD_ALL` to `True` at the top and run every cell. That writes the
-14 pieces — MIDI, WAV and score plots — plus the result table to `output/`.
+Then set `RENDER_AUDIO` and `BUILD_ALL` to `True` at the top and run every cell — about four
+minutes. That writes the 14 pieces, MIDI, WAV and score plots, plus the result table to `output/`.
+Adding `BUILD_STUDY = True` also builds the blinded listening-study set
+([§13.1](#131-the-listening-study-built-and-ready)).
 
 For music2emo, set up its separate environment as described in
 [README §9.7](README.md#97-optional-reproducing-the-music2emo-results) and run it over
@@ -935,13 +1024,19 @@ For music2emo, set up its separate environment as described in
 
 **What to compare.**
 
-| File | Should match |
-|---|---|
-| `output/examples_summary.csv` | [§11.1](#111-heartbeats-music-and-our-model) |
-| `output/essentia_results.csv` | [§11.2](#112-essentia); "sad" and "relaxed" now come out directly, with no correction |
-| `output/music2emo_results.csv` | [§11.3](#113-music2emo) |
+| File | Should match | Status |
+|---|---|---|
+| `output/examples_summary.csv` | [§11.1](#111-heartbeats-music-and-our-model) | ✅ reproduced exactly, 8 October 2026 — all 14 rows |
+| `output/record219_excluded.csv` | [§11.5](#115-the-excluded-record-219) | ✅ reproduced exactly |
+| `output/essentia_results.csv` | [§11.2](#112-essentia); "sad" and "relaxed" now come out directly, with no correction | ⬜ not yet re-run |
+| `output/music2emo_results.csv` | [§11.3](#113-music2emo) | ⬜ not yet re-run |
 
-Small differences are possible if the FluidSynth or soundfont version changes the audio.
+Small differences are possible if the FluidSynth or soundfont version changes the audio. The
+run on 8 October used FluidSynth 2.4.8 with the FluidR3 GM soundfont, under Python 3.14 with the
+versions pinned in `requirements.txt`, and matched to the last digit.
+
+**The listening-study set is deterministic.** Rebuilding it always produces the same clip
+numbering from the same seed, so a rebuild never invalidates a form already circulated.
 
 ---
 
