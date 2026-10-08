@@ -583,7 +583,7 @@ pip install chordparser==0.4.2 fire==0.7.0 huggingface_hub==0.28.1 hydra-core==1
 ├── Progress.md                   dated log of the work, newest first
 ├── listening_study_questions.md  the Google Form for the listening study
 ├── requirements.txt
-├── Sprint1.pdf, Sprint2.pdf, sprint3/   course submissions
+├── sprints/                      course submissions, Sprint 1-3 (PDF)
 └── output/                       written by the notebook
     ├── examples/<record>_<rhythm>/   melody.mid, arrangement.mid, score.png (+ .wav when built)
     ├── examples_summary.csv          per-clip heartbeat, music and emotion results

@@ -23,7 +23,7 @@ why, and what is next.
 | Documentation | ✅ Done | [Plan.md](Plan.md) (start here), [README.md](README.md), [project_description.md](project_description.md), this file. |
 | [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) | ✅ The project, executed | Every stage in one self-contained notebook, 60 cells, saved with outputs. Switches off, so it opens fast and re-runs in under a minute. Replaced the `ecgmusic/` package and `main.ipynb`. |
 | Listening study | ✅ Ready to circulate · ⬜ **no listeners** | 16 blinded clips in `output/listening_study/`, the Google Form written out in [listening_study_questions.md](listening_study_questions.md), and the analysis in §11 of the notebook. Circulation is all that remains. |
-| Sprint 3 submission | ✅ Written and committed | `sprint3/`: team report `Sprint3.pdf` (3 pages) and one 1-page individual report per member (`<roll number>_Sprint3.pdf`), with their LaTeX sources. Deliberately not edited since: they describe the project as it stood at submission. |
+| Sprint submissions | ✅ Written and committed | `sprints/`: Sprint 1 and 2 as submitted, plus the Sprint 3 team report `Sprint3.pdf` and one 1-page individual report per member. Deliberately not edited since: they describe the project as it stood at submission. |
 | Git | ✅ Committed and pushed | Everything is on `main` at [github.com/manidhar2006/MusicWorkshop](https://github.com/manidhar2006/MusicWorkshop), working tree clean. The repository is public, which the user is content with. |
 
 Legend: ✅ done · 🟨 partly done or in progress · ⬜ not started
@@ -82,6 +82,36 @@ The full reasoning, with what each step would let us conclude, is in [Plan.md §
 ---
 
 ## Log
+
+### 2026-10-09 · Pre-flight check before the survey: a loudness confound, found and fixed
+
+Checked every study clip before circulating anything. Durations (31.7-32.6 s) and levels were
+fine, but a real methodological problem turned up.
+
+- **The AFib clips were systematically louder** — +1.2 LU on average (EBU R128), with a 5.8 LU
+  spread across the 16. Peak normalisation does not prevent this: a faster heart packs more notes
+  into the same 30 seconds, so the same peak gives more perceived loudness.
+- **Why it matters.** Question 2 asks how *energetic* the music sounds, and louder music is
+  reliably rated as more energetic. A listener could have rated the AFib clips higher from
+  loudness alone, and we could not have told that apart from hearing the irregularity. It is the
+  same confound [§12](project_description.md#12-discussion-from-the-musics-emotion-to-inner-emotion)
+  already blames for Essentia's disagreement — and our own model
+  [deliberately ignores loudness](project_description.md#92-our-model), so the listeners would
+  have been judging on a cue the model does not use.
+- **The fix.** The notebook's study build now matches every clip to −23 LUFS with a single gain,
+  so dynamics within a clip are untouched. **Result: condition difference +1.20 → −0.03 LU,
+  spread 5.80 → 0.10 LU, no clipping** (loudest peak −3.7 dBFS).
+- **Two bugs fixed while getting there.** Measuring the stereo source and then downmixing to mono
+  left a residual spread, because the downmix costs about 2.3 LU and that varies per clip. The
+  first attempt at fixing it used `-ac 1`, which is an *output* option — the filter graph still
+  saw stereo and nothing changed. The downmix has to be inside the chain
+  (`aformat=channel_layouts=mono,ebur128`).
+- **The clip numbering is unchanged**, so anything already prepared from `KEY.csv` stays valid.
+- The notebook was re-executed afterwards so its saved outputs match the current source.
+
+**Also, at the user's hand:** the sprint submissions were moved into `sprints/` and the four
+`.tex` sources deleted. Recorded as-is, not reverted; references in README and this file updated.
+The sources remain in git history at `1c5a462`.
 
 ### 2026-10-09 · Documentation brought up to date
 
@@ -191,7 +221,7 @@ Cross-file anchors between all five documents were checked; all resolve.
   [listening_study_questions.md](listening_study_questions.md): module paths became notebook
   sections, the command-line sections became notebook usage, and the project-structure trees were
   rewritten. All relative links were re-checked and resolve.
-  - `sprint3/` was deliberately **not** touched: those reports were submitted and describe the
+  - The sprint reports were deliberately **not** touched: they were submitted and describe the
     project as it stood then.
   - Older entries in this log still name `ecgmusic` and `main.ipynb`, which is correct history;
     only the dead links were turned into plain text.
@@ -525,5 +555,6 @@ Cross-file anchors between all five documents were checked; all resolve.
 - **Older entries name files that no longer exist.** Entries before 2026-10-09 refer to the
   `ecgmusic/` package and `main.ipynb`, which were correct at the time; both were removed when the
   project was consolidated into `sonifying_the_heart.ipynb`. They remain in git history at
-  `aff587b`. `sprint3/` was deliberately left untouched for the same reason: those reports describe
-  the project as it stood at submission.
+  `aff587b`. The sprint reports are left untouched for the same reason: they describe the project
+  as it stood at submission. They now live in `sprints/`; the `.tex` sources were removed by the
+  user on 2026-10-09 and are in git history at `1c5a462`.
