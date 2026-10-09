@@ -22,6 +22,7 @@ why, and what is next.
 | Results | ✅ Reproduced · 🟨 partly | 14 clips from 7 recordings of 6 people, in [project_description.md §11](project_description.md#11-results). [§11.1](project_description.md#111-heartbeats-music-and-our-model) regenerated 2026-10-08 and every figure matches. §11.2 and §11.3 (Essentia, music2emo) have **not** been re-run. |
 | Documentation | ✅ Done | [Plan.md](Plan.md) (start here), [README.md](README.md), [project_description.md](project_description.md), this file. |
 | [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb) | ✅ The project, executed | Every stage in one self-contained notebook, 60 cells, saved with outputs. Switches off, so it opens fast and re-runs in under a minute. Replaced the `ecgmusic/` package and `main.ipynb`. |
+| Gallery of examples | ✅ Built | `output/gallery/`: an ECG image and both mp3s per example, plus `MAPPING.csv` / `MAPPING.md` tying them together. Labelled, so **not** for study participants. |
 | Listening study | ✅ Ready to circulate · ⬜ **no listeners** | 16 blinded clips in `output/listening_study/`, the Google Form written out in [listening_study_questions.md](listening_study_questions.md), and the analysis in §11 of the notebook. Circulation is all that remains. |
 | Sprint submissions | ✅ Written and committed | `sprints/`: Sprint 1 and 2 as submitted, plus the Sprint 3 team report `Sprint3.pdf` and one 1-page individual report per member. Deliberately not edited since: they describe the project as it stood at submission. |
 | Git | ✅ Committed and pushed | Everything is on `main` at [github.com/manidhar2006/MusicWorkshop](https://github.com/manidhar2006/MusicWorkshop), working tree clean. The repository is public, which the user is content with. |
@@ -82,6 +83,31 @@ The full reasoning, with what each step would let us conclude, is in [Plan.md §
 ---
 
 ## Log
+
+### 2026-10-09 · A labelled gallery: ECG images, music, and the mapping between them
+
+- **What the user asked for:** the ECG images and the music made from them, with the mapping of
+  examples in a separate file.
+- **Added an appendix to [sonifying_the_heart.ipynb](sonifying_the_heart.ipynb)** that writes
+  `output/gallery/` — kept in the notebook rather than a side script, so it stays reproducible.
+  62 cells now.
+- **Per example (all 16, including both record 219 clips):**
+  - `ecg/<name>_ecg.png` — the full 30 s with every beat marked, and the first 8 s enlarged
+    underneath with **the gap between each pair of beats printed in milliseconds**. That lower
+    panel is what makes the point without a word of explanation: 04043 normal reads
+    548–564 ms, its AFib clip 380–580 ms.
+  - `audio/<name>_melody.mp3` and `audio/<name>_arrangement.mp3` at 160 kbps.
+- **The mapping, as asked, in its own file.** `MAPPING.csv` has 22 columns — image, both mp3s,
+  score plot, both MIDI files, bpm, RMSSD, note count, off-scale share, valence, arousal, emotion,
+  instrument and the three chord counts. `MAPPING.md` is the readable table, with what to listen
+  for and a description of every column.
+- **The clip numbers are deliberately absent.** The gallery is labelled and the study is blind, so
+  `MAPPING.*` carries no `clip_01…16`; those stay only in `output/listening_study/KEY.csv`. Both
+  mapping files warn against showing the gallery to anyone who has not yet rated the clips.
+- **One defect found and fixed in the render:** the enlarged panel's title collided with the row
+  of gap labels. The panel now reserves headroom above the trace.
+- **In git:** the ECG images and both mapping files are tracked (3.3 MB). `output/gallery/audio/`
+  is not — 21 MB, and the notebook regenerates it.
 
 ### 2026-10-09 · Clean end-to-end rebuild
 

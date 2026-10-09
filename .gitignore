@@ -21,3 +21,7 @@ responses.csv
 # The study's 16 blinded mp3s: regenerate from section 11 of sonifying_the_heart.ipynb, which
 # is deterministic. KEY.csv is tracked, so the mapping survives a fresh clone.
 output/listening_study/*.mp3
+
+# The gallery's audio is 21 MB and regenerable from the notebook's appendix. Its ECG images and
+# MAPPING.csv / MAPPING.md are small and are tracked, so the mapping is readable from a clone.
+output/gallery/audio/
